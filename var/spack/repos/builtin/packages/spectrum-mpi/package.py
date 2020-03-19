@@ -36,20 +36,25 @@ class SpectrumMpi(Package):
 
     def setup_dependent_environment(self, spack_env, run_env, dependent_spec):
         if '%xl' in dependent_spec or '%xl_r' in dependent_spec:
-            spack_env.set('MPICC', join_path(self.prefix.bin, 'mpixlc'))
-            spack_env.set('MPICXX', join_path(self.prefix.bin, 'mpixlC'))
-            spack_env.set('MPIF77', join_path(self.prefix.bin, 'mpixlf'))
-            spack_env.set('MPIF90', join_path(self.prefix.bin, 'mpixlf'))
+            cc  = 'mpixlc'
+            cxx = 'mpixlC'
+            f77 = 'mpixlf'
+            f90 = 'mpixlf'
         elif '%pgi' in dependent_spec:
-            spack_env.set('MPICC', join_path(self.prefix.bin, 'mpipgicc'))
-            spack_env.set('MPICXX', join_path(self.prefix.bin, 'mpipgic++'))
-            spack_env.set('MPIF77', join_path(self.prefix.bin, 'mpipgifort'))
-            spack_env.set('MPIF90', join_path(self.prefix.bin, 'mpipgifort'))
+            cc  = 'mpipgicc'
+            cxx = 'mpipgic++'
+            f77 = 'mpipgifort'
+            f90 = 'mpipgifort'
         else:
-            spack_env.set('MPICC', join_path(self.prefix.bin, 'mpicc'))
-            spack_env.set('MPICXX', join_path(self.prefix.bin, 'mpic++'))
-            spack_env.set('MPIF77', join_path(self.prefix.bin, 'mpif77'))
-            spack_env.set('MPIF90', join_path(self.prefix.bin, 'mpif90'))
+            cc  = 'mpicc'
+            cxx = 'mpic++'
+            f77 = 'mpif77'
+            f90 = 'mpif90'
+
+        spack_env.set('MPICC',  "{0} -I{1}".format(join_path(self.prefix.bin, cc ), self.prefix.lib))
+        spack_env.set('MPICXX', "{0} -I{1}".format(join_path(self.prefix.bin, cxx), self.prefix.lib))
+        spack_env.set('MPIF77', "{0} -I{1}".format(join_path(self.prefix.bin, f77), self.prefix.lib))
+        spack_env.set('MPIF90', "{0} -I{1}".format(join_path(self.prefix.bin, f90), self.prefix.lib))
 
         spack_env.set('OMPI_CC', spack_cc)
         spack_env.set('OMPI_CXX', spack_cxx)

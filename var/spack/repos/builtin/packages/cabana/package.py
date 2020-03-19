@@ -20,15 +20,31 @@ class Cabana(CMakePackage):
     variant('serial', default=True, description="enable Serial backend (default)")
     variant('openmp', default=False, description="enable OpenMP backend")
     variant('cuda', default=False, description="enable Cuda backend")
+    variant('mpi', default=False, description="enable MPI")
+
+    depends_on("mpi", when="+mpi")
+    depends_on("cuda", when="+cuda")
 
     depends_on("cmake@3.9:", type='build')
-    depends_on("kokkos+serial", when="+serial")
-    depends_on("kokkos+openmp", when="+openmp")
-    depends_on("kokkos+cuda", when="+cuda")
+
+    depends_on("kokkos-cmake +serial", when="+serial")
+    depends_on("kokkos-cmake +openmp", when="+openmp")
+
+    depends_on("kokkos-cmake +cuda", when="+cuda")
+    depends_on("kokkos-cmake -cuda", when="-cuda")
+
+    #depends_on('hwloc@:1')
+
+    def setup_environment(self, spack_env, run_env):
+        if self.spec.satisfies('+cuda'):
+            #spack_env.set('NVCC_WRAPPER_DEFAULT_COMPILER', self.compiler.cxx)
+            spack_env.set('NVCC_WRAPPER_DEFAULT_COMPILER', 'g++')
+
 
     def cmake_args(self):
         options = [
             '-DCabana_ENABLE_TESTING=ON',
+            '-DCMAKE_POLICY_DEFAULT_CMP0074=NEW',
             '-DCabana_ENABLE_Serial=%s'  % (
                 'On' if '+serial'  in self.spec else 'Off'),
             '-DCabana_ENABLE_OpenMP=%s'  % (
@@ -36,5 +52,17 @@ class Cabana(CMakePackage):
             '-DCabana_ENABLE_Cuda=%s'  % (
                 'On' if '+cuda'  in self.spec else 'Off')
         ]
+
+        if self.spec.satisfies("+cuda"):
+            options += ['-DCMAKE_CXX_COMPILER={0}'.format(join_path(self.spec['kokkos-cmake'].prefix.bin, 'nvcc_wrapper'))]
+        elif self.spec.satisfies("+mpi"):
+            options += ['-DCMAKE_CXX_COMPILER={0}'.format(self.spec['mpi'].mpicxx)]
+        else:
+            options += ['-DCMAKE_CXX_COMPILER={0}'.format(self.compiler.cxx)]
+
+        """
+        if self.spec.satisfies("%pgi"):
+            options += ['-DCMAKE_CXX_FLAGS=-std=c++11']
+        """
 
         return options

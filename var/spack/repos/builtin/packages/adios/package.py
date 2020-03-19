@@ -142,6 +142,7 @@ class Adios(AutotoolsPackage):
         if '+mpi' in spec:
             env['MPICC'] = spec['mpi'].mpicc
             env['MPICXX'] = spec['mpi'].mpicxx
+            env['MPIFC'] = spec['mpi'].mpifc
 
         extra_args += self.with_or_without('mpi', activation_value='prefix')
         extra_args += self.with_or_without('infiniband')
