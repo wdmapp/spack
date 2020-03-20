@@ -1,0 +1,18 @@
+compilers:
+- compiler:
+    spec: gcc@8.3.0
+    paths:
+      cc: cc
+      cxx: CC
+      f77: ftn
+      fc: ftn
+    flags: {}
+    operating_system: cnl6
+    target: any
+    modules:
+    - PrgEnv-gnu
+    - gcc/8.3.0
+    environment: {}
+    extra_rpaths:
+    - /opt/gcc/8.3.0/snos/lib64
+    - /opt/cray/ugni/6.0.14.0-6.0.7.1_3.15__gea11d3d.ari/lib64

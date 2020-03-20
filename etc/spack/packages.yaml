@@ -1,0 +1,61 @@
+packages:
+
+  adios:  {version: [develop], variants: '+mpi +fortran +sz +mgard -zfp staging=none'}
+  adios2: {version: [2.5.0, develop], variants: '+python +mpi +sst +dataman build_type=Release'}
+  kittie: {version: [develop], variants: +mpi +python-prefix -touch -fine-time}
+  
+  libfabric:
+    variants: "fabrics=gni"
+
+  hpic: {version: [devel],  variants: build_type=Debug}
+  hdf5: {version: [1.8.19], variants: +hl +fortran}
+  fftw: {modules: {fftw: cray-fftw/3.3.8.3}}
+
+  all:
+    compiler: [gcc@8.3.0]
+    providers:
+      mpi: [mpich]
+      blas:      [netlib-lapack]
+      lapack:    [netlib-lapack]
+      scalapack: [netlib-scalapack]
+
+  mpich:
+    version: [3.2]
+    modules:
+      'mpich % gcc@8.3.0': cray-mpich/7.7.10
+
+  bzip2: {paths: {bzip2: /usr}}
+
+  cmake:
+    version: [3.14.5]
+    paths:
+      cmake@3.14.5: /soft/buildtools/cmake/3.14.5
+
+  perl:  {paths: {perl: /usr}}
+  xz:    {paths: {xz: /usr}}
+  autoconf: {paths: {autoconf: /usr}}
+  automake: {paths: {automake: /usr}}
+
+  libtool:
+    paths:
+      libtool@2.4.2: /usr
+
+  python:
+    version: [3.6.5, 2.7.15]
+    paths:
+      'python@2.7.15': /opt/python/2.7.15.1
+      'python@3.6.5':  /opt/python/3.6.5.3 
+
+  py-numpy:
+    paths:
+      'py-numpy % gcc@8.3.0 ^ python@3.6.5':  /opt/python/3.6.5.3
+      'py-numpy % gcc@8.3.0 ^ python@2.7.15': /opt/python/2.7.15.1
+
+  py-mpi4py:
+    paths:
+      'py-mpi4py % gcc@8.3.0 ^ python@3.6.5':  /opt/python/3.6.5.3
+      'py-mpi4py % gcc@8.3.0 ^ python@2.7.15': /opt/python/2.7.15.1
+
+  petsc:
+    version: [3.11.4]
+
