@@ -116,7 +116,7 @@ class Adios2(CMakePackage):
     patch('cmake-update-findmpi.patch', when='@2.4.0')
 
     def cmake_args(self):
-        filter_file('(COMPONENTS Interp Libs numpy)', 'COMPONENTS Interp Libs', os.path.join('cmake', 'DetectOptions.cmake'))
+        filter_file('(COMPONENTS Interp Libs numpy)', 'COMPONENTS Interp', os.path.join('cmake', 'DetectOptions.cmake'))
         filter_file('-flto\$\{linker_append\}', '-fno-lto', "thirdparty/pybind11/pybind11/tools/pybind11Tools.cmake")
         spec = self.spec
 

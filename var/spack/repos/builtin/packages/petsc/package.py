@@ -214,6 +214,8 @@ class Petsc(Package):
         return compiler_opts
 
     def install(self, spec, prefix):
+        filter_file('dsymutil', '#dsymutil', "config/PETSc/options/sharedLibraries.py")
+        filter_file("if hasattr\(self, 'dsymutil'\)", "if hasattr(self, '#dsymutil')", "config/BuildSystem/config/utilities/debuggers.py")
         options = ['--with-ssl=0',
                    '--download-c2html=0',
                    '--download-sowing=0',
@@ -398,3 +400,7 @@ class Petsc(Package):
             or None  # return None to indicate failure
 
     # For the 'libs' property - use the default handler.
+
+    def setup_environment(self, spack_env, run_env):
+        spack_env.unset('F77')
+

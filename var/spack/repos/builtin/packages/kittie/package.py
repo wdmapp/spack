@@ -27,13 +27,20 @@ class Kittie(CMakePackage):
     depends_on('py-pyyaml')
     depends_on('py-numpy')
     depends_on('py-mpi4py', when="+mpi")
-    
+
     extends('python')
     depends_on('python@2.7:', type=('build', 'run'))
     #depends_on('savanna@develop', when="^python@3:")
     depends_on('codar-cheetah@develop', when="^python@3:")
 
+
+    def setup_environment(self, spack_env, run_env):
+        if self.spec.satisfies('%gcc'):
+            spack_env.prepend_path('LD_LIBRARY_PATH', '/opt/cray/pe/gcc-libs')
+
+
     def cmake_args(self):
+        filter_file('find_package\(Python REQUIRED\)', 'find_package(PythonInterp)', 'CMakeLists.txt')
         args = []
 
         if self.spec.satisfies('+python-prefix'):
