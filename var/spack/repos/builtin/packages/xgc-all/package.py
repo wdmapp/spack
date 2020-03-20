@@ -28,18 +28,16 @@ class XgcAll(CMakePackage):
     depends_on('metis +real64')
     depends_on('hdf5 +mpi +fortran +hl')
     depends_on('adios2 -python')
-    #depends_on('adios2')
     depends_on("adios +fortran")
     depends_on('kittie', when="+effis")
 
     depends_on('petsc -complex -superlu-dist @3.7.0:3.7.99',  when="@gabriele")
-    #depends_on('petsc -complex -superlu-dist @3.7.0:3.10.99', when="@suchyta")
     depends_on('petsc -complex -superlu-dist @3.7.0:3.7.99', when="@suchyta")
     depends_on('petsc -complex -superlu-dist', when="@master")
 
-    depends_on('pspline-devel', when="@suchyta")
-    depends_on('pspline-devel', when="@gabriele")
-    #depends_on('pspline-devel', when="@master +gpu")
+    depends_on('pspline', when="@suchyta")
+    depends_on('pspline', when="@gabriele")
+
     depends_on('camtimers +openmp', when="@suchyta +omp")
     depends_on('camtimers -openmp', when="@suchyta -omp")
     depends_on('camtimers +openmp', when="@gabriele +omp")
@@ -93,12 +91,8 @@ class XgcAll(CMakePackage):
         filter_file('^\s*(HDF5_INC\s*=.*)$', 'HDF5_INC = -I{0}'.format(spec['hdf5'].prefix.include), self.makefile)
         filter_file('^\s*(HDF5_LIB\s*=.*)$', 'HDF5_LIB = -L{0} -lhdf5_fortran -lhdf5'.format(spec['hdf5'].prefix.lib), self.makefile)
 
-        if spec.satisfies('^pspline'):
-            self.pspline = "pspline"
-        elif spec.satisfies('^pspline-devel'):
-            self.pspline = "pspline-devel"
-        filter_file('^\s*(PSPLINE_INC\s*=.*)$', 'PSPLINE_INC = -I{0}'.format(spec[self.pspline].prefix.include), self.makefile)
-        filter_file('^\s*(PSPLINE_LIB\s*=.*)$', 'PSPLINE_LIB = -L{0} -lpspline'.format(spec[self.pspline].prefix.lib), self.makefile)
+        filter_file('^\s*(PSPLINE_INC\s*=.*)$', 'PSPLINE_INC = -I{0}'.format(spec["pspline"].prefix.include), self.makefile)
+        filter_file('^\s*(PSPLINE_LIB\s*=.*)$', 'PSPLINE_LIB = -L{0} -lpspline'.format(spec["pspline"].prefix.lib), self.makefile)
 
         if not spec.satisfies('^cray-libsci'):
             filter_file('^\s*(LAPACK_INC\s*=.*)$', 'LAPACK_INC = -I{0}'.format(spec['lapack'].prefix.include), self.makefile)
@@ -159,7 +153,7 @@ class XgcAll(CMakePackage):
         self.edit(spec, prefix)
         self.compiler_based()
         filter_file('^\s*(CXX\s*=\s*.*)$', 'CXX = {0}'.format(spec['mpi'].mpicxx), self.makefile)
-        filter_file('^\s*(PSPLINE_INC\s*=.*)$', 'PSPLINE_INC = -I{0}/mod'.format(spec[self.pspline].prefix), self.makefile)
+        filter_file('^\s*(PSPLINE_INC\s*=.*)$', 'PSPLINE_INC = -I{0}/mod'.format(spec["pspline"].prefix), self.makefile)
         filter_file('^\s*(XGC_FLAGS\s*\+=\s*-DITER_GRID)', 'XGC_FLAGS += -DDELTAF_MODE2 -DITER_GRID', self.flagfile)
         #filter_file('-acc', '-fopenacc', self.makefile)
 
@@ -185,7 +179,7 @@ class XgcAll(CMakePackage):
         self.edit(spec, prefix)
         self.compiler_based()
         filter_file('^\s*(CXX\s*=\s*.*)$', 'CXX = {0}'.format(spec['mpi'].mpicxx), self.makefile)
-        filter_file('^\s*(PSPLINE_INC\s*=.*)$', 'PSPLINE_INC = -I{0}/mod'.format(spec[self.pspline].prefix), self.makefile)
+        filter_file('^\s*(PSPLINE_INC\s*=.*)$', 'PSPLINE_INC = -I{0}/mod'.format(spec["pspline"].prefix), self.makefile)
         filter_file('^\s*(XGC_FLAGS\s*\+=\s*-DITER_GRID)', 'XGC_FLAGS += -DDELTAF_MODE2 -DITER_GRID', self.flagfile)
 
     @when("@suchyta -gpu")
@@ -311,7 +305,7 @@ class XgcAll(CMakePackage):
     @when("@gabriele -gpu")
     def cmake(self, spec, prefix):
         self.edit(spec, prefix)
-        filter_file('^\s*(PSPLINE_INC\s*=.*)$', 'PSPLINE_INC = -I{0}/mod'.format(spec[self.pspline].prefix), self.makefile)
+        filter_file('^\s*(PSPLINE_INC\s*=.*)$', 'PSPLINE_INC = -I{0}/mod'.format(spec["pspline"].prefix), self.makefile)
 
         if self.spec.satisfies("%pgi"):
             filter_file('-J', '-module', self.makefile)
