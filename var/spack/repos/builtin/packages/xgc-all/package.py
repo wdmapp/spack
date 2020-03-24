@@ -42,16 +42,20 @@ class XgcAll(CMakePackage):
     depends_on('camtimers -openmp', when="@suchyta -omp")
     depends_on('camtimers +openmp', when="@gabriele +omp")
     depends_on('camtimers -openmp', when="@gabriele -omp")
-    depends_on('camtimers +openmp', when="@master +gpu +omp")
-    depends_on('camtimers -openmp', when="@master +gpu -omp")
+
+    #depends_on('camtimers +openmp', when="@master +gpu +omp")
+    #depends_on('camtimers -openmp', when="@master +gpu -omp")
 
     #depends_on('cuda', when='+gpu')
     #depends_on('cuda', when="@master +gpu")
 
-    depends_on('kokkos-cmake@develop -hwloc +serial +openmp +cuda +enable_lambda gpu_arch=Volta70', when="@master +gpu")
-    depends_on('kokkos-cmake@develop +serial +openmp -cuda', when="@master -gpu")
-    depends_on('cabana@develop +serial +openmp +cuda', when="@master +gpu")
-    depends_on('cabana@develop +serial +openmp -cuda', when="@master -gpu")
+    depends_on('kokkos-cmake@develop +serial', when="@master")
+    depends_on('kokkos-cmake@develop +openmp', when="@master +openmp")
+    depends_on('kokkos-cmake@develop +serial +openmp +cuda +enable_lambda gpu_arch=Volta70', when="@master +gpu")
+
+    depends_on('cabana@develop +serial', when="@master")
+    depends_on('cabana@develop +openmp', when="@master +omp")
+    depends_on('cabana@develop +cuda', when="@master +gpu")
 
     conflicts("@gabriele", when="+gpu")
     parallel = False
