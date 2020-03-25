@@ -7,41 +7,20 @@ packages:
       mpi: [mpich]
       scalapack: [netlib-scalapack]
 
-  mpich:
-    paths:
-      mpich: /usr/local    
-
   camtimers:
     variants: -openmp
 
   python:
-    version: [3.7.4, 2.7.16]
     variants: +shared
-    #paths:
-    #  "python@2.7.16": "/usr/local/Cellar/python@2/2.7.16/Frameworks/Python.framework/Versions/2.7"
-    #  "python@3.7.4":  "/usr/local/Cellar/python/3.7.4/Frameworks/Python.framework/Versions/3.7"
       
-  py-pyyaml:
-    paths:
-      #"py-pyyaml ^ python@2.7.16": "/usr/local/Cellar/python@2/2.7.16/Frameworks/Python.framework/Versions/2.7"
-      "py-pyyaml ^ python@3.7.4":  "/Users/eqs/Software/spack/view/python-3.7.4"
-
-  py-mpi4py:
-    paths:
-      #"py-mpi4py ^ python@2.7.16": "/usr/local/Cellar/python@2/2.7.16/Frameworks/Python.framework/Versions/2.7"
-      "py-mpi4py ^ python@3.7.4":  "/Users/eqs/Software/spack/view/python-3.7.4"
-
   py-numpy:
     version: [1.16.5]
-    paths:
-      #"py-numpy ^ python@2.7.16": "/usr/local/Cellar/python@2/2.7.16/Frameworks/Python.framework/Versions/2.7"
-      "py-numpy ^ python@3.7.4":  "/Users/eqs/Software/spack/view/python-3.7.4"
 
   libfabric:
     variants: "fabrics=sockets"
 
   adios2:
-    version: [2.5.0, develop]
+    version: [develop]
     variants: '+python build_type=Release'
 
   kittie:
