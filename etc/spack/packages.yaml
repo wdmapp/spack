@@ -1,0 +1,32 @@
+packages:
+  all:
+    compiler: [gcc@6.2.0]
+    providers:
+      blas: [netlib-lapack]
+      lapack: [netlib-lapack]
+      mpi: [openmpi]
+      scalapack: [netlib-scalapack]
+
+  openmpi: 
+    version: [3.1.4]
+    buildable: false
+    paths:
+      'openmpi@3.1.4 %gcc@6.2.0': /autofs/nccs-svm1_sw/rhea/.swci/0-core/opt/spack/20191017/linux-rhel7-x86_64/gcc-6.2.0/openmpi-3.1.4-6i3xptfa3r6joouympddcnja5njc3eda
+
+  # Newer versions require python3, but old PETSc requires python2
+  py-numpy:
+    version: [1.16.5]
+
+  # Anything but agg has a very deep build tree
+  #py-matplotlib:
+  #  variants: 'backend=qt5agg'
+
+  libfabric:
+    variants: 'fabrics=verbs'
+
+  adios2:
+    version: [2.5.0, develop]
+    variants: '+python build_type=Release'
+
+  kittie:
+    version: [develop]
