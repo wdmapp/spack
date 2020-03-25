@@ -24,6 +24,7 @@ class Kittie(CMakePackage):
     depends_on('adios2')
 
     depends_on('yaml-cpp')
+    depends_on('py-setuptools')
     depends_on('py-pyyaml')
     depends_on('py-numpy')
     depends_on('py-mpi4py', when="+mpi")
