@@ -30,8 +30,10 @@ class Kittie(CMakePackage):
 
     extends('python')
     depends_on('python@2.7:', type=('build', 'run'))
-    #depends_on('savanna@develop', when="^python@3:")
+
     depends_on('codar-cheetah@develop', when="^python@3:")
+    depends_on('py-matplotlib', when="^python@3:")
+
 
 
     def setup_environment(self, spack_env, run_env):
