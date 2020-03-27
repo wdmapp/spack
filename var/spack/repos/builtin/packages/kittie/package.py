@@ -12,6 +12,8 @@ class Kittie(CMakePackage):
     #version('develop', git='https://github.com/suchyta1/kittie.git', branch='monitor', preferred=True)
     version('develop', git='https://github.com/suchyta1/kittie.git', branch='develop', preferred=True)
     version('master',  git='https://github.com/suchyta1/kittie.git', branch='master',  preferred=False)
+    version('effis',  git='https://github.com/wdmapp/effis.git', branch='effis',  preferred=False)
+    version('kittie',  git='https://github.com/wdmapp/effis.git', branch='kittie',  preferred=False)
 
     variant("mpi", default=True, description="Use MPI")
     variant("fine-time", default=False, description="Finer timing")
