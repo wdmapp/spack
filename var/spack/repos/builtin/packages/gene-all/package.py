@@ -12,6 +12,7 @@ class GeneAll(MakefilePackage):
     url = "http://genecode.org/"
 
     version('gabriele', git='https://code.ornl.gov/eqs/gene-coupling.git', branch='ecp+xgc')
+    version('gitlab', git='https://code.ornl.gov/eqs/gene-coupling.git', branch='effis')
 
     variant('couple', default="none", description='Spatial coupling', values=["xgc-edge"])
     variant('gptl', default=False, description='Use GPTL timing')
@@ -33,7 +34,9 @@ class GeneAll(MakefilePackage):
 
     depends_on("adios +fortran")
     depends_on("adios2", when="+adios2")
-    depends_on("kittie", when="+effis")
+
+    depends_on("effis@kittie", when="@gabriele +effis")
+    depends_on("effis@effis", when="@gitlab +effis")
 
 
     def setup_environment(self, spack_env, run_env):
@@ -41,7 +44,7 @@ class GeneAll(MakefilePackage):
         spack_env.set('FFTW_INC', self.spec['fftw'].prefix.include)
 
 
-    @when("@gabriele")
+    @when("@gabriele,gitlab")
     def edit(self, spec, prefix):
         pwd = os.getcwd()
         self.makefile = os.path.join(pwd, 'makefiles', 'spack-suchyta', 'spack-suchyta.mk')
@@ -111,9 +114,9 @@ class GeneAll(MakefilePackage):
                 filter_file('^\s*(EFFIS\s*=.*)$', 'EFFIS = yes', self.makefile)
                 filter_file('^\s*(ADIOS2_LIB\s*=.*)$', "ADIOS2_LIB = -lkittie_f -ladios2 -ladios2_f", self.rules)
                 if spec.satisfies("^adios2@2.4.0:"):
-                    filter_file('^\s*(ADIOS2_INC\s*=.*)$', "ADIOS2_INC = -I{1} -I{0} -I{0}/adios2/fortran".format(spec['adios2'].prefix.include, spec['kittie'].prefix.include), self.rules)
+                    filter_file('^\s*(ADIOS2_INC\s*=.*)$', "ADIOS2_INC = -I{1} -I{0} -I{0}/adios2/fortran".format(spec['adios2'].prefix.include, spec['effis'].prefix.include), self.rules)
                 else:
-                    filter_file('^\s*(ADIOS2_INC\s*=.*)$', "ADIOS2_INC = -I{1} -I{0} -I{0}/fortran".format(spec['adios2'].prefix.include, spec['kittie'].prefix.include), self.rules)
+                    filter_file('^\s*(ADIOS2_INC\s*=.*)$', "ADIOS2_INC = -I{1} -I{0} -I{0}/fortran".format(spec['adios2'].prefix.include, spec['effis'].prefix.include), self.rules)
 
             else:
                 filter_file('^\s*(ADIOS2_LIB\s*=.*)$', "ADIOS2_LIB = -ladios2 -ladios2_f", self.rules)
@@ -130,13 +133,13 @@ class GeneAll(MakefilePackage):
         filter_file('#main', "", self.MakeGene)
 
 
-    @when("@gabriele")
+    @when("@gabriele,gitlab")
     def build(self, spec, prefix):
         with working_dir(self.builddir, create=True):
             make("--makefile={0}".format(self.MakeGene))
 
 
-    @when("@gabriele")
+    @when("@gabriele,gitlab")
     def install(self, spec, prefix):
         """ Copy the binary and ADIOS XML file to the install directory """
 

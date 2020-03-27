@@ -14,6 +14,7 @@ class XgcAll(CMakePackage):
     version('master',  git='https://github.com/PrincetonUniversity/XGC-Devel.git', branch='master')
     version('suchyta', git='https://github.com/suchyta1/XGC-Devel.git', branch='effis-core-edge')
     version('gabriele', git='https://code.ornl.gov/eqs/xgc-coupling.git', branch='master')
+    version('gitlab', git='https://code.ornl.gov/eqs/xgc-coupling.git', branch='effis')
 
     variant('couple', default="none", description='Spatial coupling', values=["gene", "xgc-core", "xgc-edge", "none"])
     variant('effis', default=False, description='EFFIS support')
@@ -29,22 +30,15 @@ class XgcAll(CMakePackage):
     depends_on('hdf5 +mpi +fortran +hl')
     depends_on('adios2 -python')
     depends_on("adios +fortran")
-    depends_on('kittie', when="+effis")
 
-    depends_on('petsc -complex -superlu-dist @3.7.0:3.7.99',  when="@gabriele")
-    depends_on('petsc -complex -superlu-dist @3.7.0:3.7.99', when="@suchyta")
+    depends_on('effis@kittie', when="@master,suchyta,gabriele +effis")
+    depends_on('effis@effis', when="@gitlab +effis")
+
+    depends_on('petsc -complex -superlu-dist @3.7.0:3.7.99',  when="@gabriele,gitlab,suchyta")
     depends_on('petsc -complex -superlu-dist', when="@master")
-
-    depends_on('pspline', when="@suchyta")
-    depends_on('pspline', when="@gabriele")
-
-    depends_on('camtimers +openmp', when="@suchyta +omp")
-    depends_on('camtimers -openmp', when="@suchyta -omp")
-    depends_on('camtimers +openmp', when="@gabriele +omp")
-    depends_on('camtimers -openmp', when="@gabriele -omp")
-
-    #depends_on('camtimers +openmp', when="@master +gpu +omp")
-    #depends_on('camtimers -openmp', when="@master +gpu -omp")
+    depends_on('pspline', when="@gabriele,gitlab,suchyta")
+    depends_on('camtimers +openmp', when="@gabriele,gitlab,suchyta +omp")
+    depends_on('camtimers -openmp', when="@gabriele,gitlab,suchyta -omp")
 
     #depends_on('cuda', when='+gpu')
     #depends_on('cuda', when="@master +gpu")
@@ -58,6 +52,8 @@ class XgcAll(CMakePackage):
     depends_on('cabana@develop +cuda', when="@master +gpu")
 
     conflicts("@gabriele", when="+gpu")
+    conflicts("@gitlab", when="+gpu")
+
     parallel = False
 
 
@@ -73,8 +69,8 @@ class XgcAll(CMakePackage):
         filter_file('^\s*(ADIOS2_LIB\s*=.*)$',   'ADIOS2_LIB = ', self.makefile)
 
         if spec.satisfies("+effis"):
-            filter_file('^\s*(ADIOS_INC\s*=.*)$', 'ADIOS_INC = -I{2} -I{0} -I{0}/adios2/fortran -I{1}'.format(spec['adios2'].prefix.include, spec['adios'].prefix.include, spec['kittie'].prefix.include), self.makefile)
-            filter_file('^\s*(ADIOS_LIB\s*=.*)$', 'ADIOS_LIB = $(shell adios_config -f -l) -L{1} -lkittie_f -L{0} -ladios2 -ladios2_f'.format(spec['adios2'].prefix.lib, spec['kittie'].prefix.lib), self.makefile)
+            filter_file('^\s*(ADIOS_INC\s*=.*)$', 'ADIOS_INC = -I{2} -I{0} -I{0}/adios2/fortran -I{1}'.format(spec['adios2'].prefix.include, spec['adios'].prefix.include, spec['effis'].prefix.include), self.makefile)
+            filter_file('^\s*(ADIOS_LIB\s*=.*)$', 'ADIOS_LIB = $(shell adios_config -f -l) -L{1} -lkittie_f -L{0} -ladios2 -ladios2_f'.format(spec['adios2'].prefix.lib, spec['effis'].prefix.lib), self.makefile)
         elif spec.satisfies("^adios2@2.4.0:"):
             filter_file('^\s*(ADIOS_INC\s*=.*)$', 'ADIOS_INC = -I{0} -I{0}/adios2/fortran -I{1}'.format(spec['adios2'].prefix.include, spec['adios'].prefix.include), self.makefile)
             filter_file('^\s*(ADIOS_LIB\s*=.*)$', 'ADIOS_LIB = $(shell adios_config -f -l)  -L{0} -ladios2 -ladios2_f'.format(spec['adios2'].prefix.lib), self.makefile)
@@ -302,11 +298,11 @@ class XgcAll(CMakePackage):
             install(join_path(self.build_directory, "bin", "xgc-es-cpp-gpu"), self.prefix.bin)
 
 
-    @when("@gabriele -gpu")
+    @when("@gabriele,gitlab -gpu")
     def setup_environment(self, spack_env, run_env):
         self.makefile = os.path.join("Makefile.theta")
 
-    @when("@gabriele -gpu")
+    @when("@gabriele,gitlab -gpu")
     def cmake(self, spec, prefix):
         self.edit(spec, prefix)
         filter_file('^\s*(PSPLINE_INC\s*=.*)$', 'PSPLINE_INC = -I{0}/mod'.format(spec["pspline"].prefix), self.makefile)
@@ -320,11 +316,11 @@ class XgcAll(CMakePackage):
         elif self.spec.satisfies("%pgi"):
             filter_file("-fopenmp", "-mp", self.makefile)
 
-    @when("@gabriele -gpu")
+    @when("@gabriele,gitlab -gpu")
     def build(self, spec, prefix):
         make('-f', self.makefile, 'es', parallel=False)
 
-    @when("@gabriele -gpu")
+    @when("@gabriele,gitlab -gpu")
     def install(self, spec, prefix):
         mkdirp(self.prefix.bin)
         binary = "xgc-es"
