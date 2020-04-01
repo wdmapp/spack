@@ -1,0 +1,97 @@
+packages:
+  all:
+    compiler:
+      - gcc@7.4.0
+      - pgi@19.10
+    providers:
+      blas: [netlib-lapack]
+      lapack: [netlib-lapack]
+      mpi: [mpich, openmpi]
+      scalapack: [netlib-scalapack]
+
+  mpich: 
+    version: [3.3]
+    paths:
+      'mpich@3.3 %gcc@7.4.0': /usr
+
+  openmpi:
+    version: [3.1.3]
+    paths:
+      'openmpi@3.1.3 %pgi@19.10': /opt/pgi/linux86-64-llvm/2019/mpi/openmpi-3.1.3
+
+  py-numpy:
+    version: [1.16.5]
+
+  cuda:
+    paths:
+      cuda: /usr
+
+  libfabric:
+    variants: "fabrics=sockets"
+    paths:
+      'libfabric % pgi': /usr
+
+  adios2:
+    version: [develop]
+    variants: '+python build_type=Release'
+    #variants: '-dataman -ssc +python build_type=Release'
+    
+  effis:
+    version: [effis]
+
+  yaml-cpp:
+    version: [0.6.3]
+
+  kittie:
+    version: [develop]
+
+
+  ### These don't build correctly with PGI ###
+  c-blosc:
+    paths:
+      'c-blosc % pgi': /usr
+
+  cmake:
+    paths:
+      'cmake % pgi': /usr
+
+  fftw:
+    paths:
+      'fftw % pgi': /home/eqs/spack-view/fftw-3.3.8
+
+  gettext:
+    paths:
+      'gettext % pgi': /usr
+
+  libffi:
+    paths:
+      'libffi % pgi': /usr/x86_64-linux-gnu
+
+  lz4:
+    paths:
+      'lz4 % pgi': /usr/x86_64-linux-gnu
+
+  numactl:
+    paths:
+      'numactl % pgi': /usr/x86_64-linux-gnu
+
+  openssl:
+    paths:
+      'openssl % pgi': /usr
+
+  perl:
+    paths:
+      'perl % pgi': /usr
+
+  pkg-config:
+    paths:
+      'pkg-config % pgi': /usr
+
+  zeromq:
+    paths:
+      'zeromq % pgi': /usr/x86_64-linux-gnu
+
+  zstd:
+    paths:
+      'zstd % pgi': /usr/x86_64-linux-gnu
+  ###########################################

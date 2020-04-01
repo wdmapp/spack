@@ -1,0 +1,27 @@
+compilers:
+- compiler:
+    spec: gcc@7.4.0
+    paths:
+      cc: /usr/bin/gcc-7
+      cxx: /usr/bin/g++-7
+      f77: /usr/bin/gfortran-7
+      fc: /usr/bin/gfortran-7
+    flags: {}
+    operating_system: ubuntu18.04
+    target: x86_64
+    modules: []
+    environment: {}
+    extra_rpaths: []
+- compiler:
+    spec: pgi@19.10
+    paths:
+      cc: /opt/pgi/linux86-64-llvm/2019/bin/pgcc
+      cxx: /opt/pgi/linux86-64-llvm/2019/bin/pgc++
+      f77: /opt/pgi/linux86-64-llvm/2019/bin/pgfortran
+      fc: /opt/pgi/linux86-64-llvm/2019/bin/pgfortran
+    flags: {}
+    operating_system: ubuntu18.04
+    target: x86_64
+    modules: []
+    environment: {}
+    extra_rpaths: []
