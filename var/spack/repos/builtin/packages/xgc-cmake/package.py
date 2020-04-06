@@ -18,20 +18,16 @@ class XgcCmake(CMakePackage):
 
     depends_on('mpi')
     depends_on('fftw')
-    #depends_on('petsc -complex +superlu-dist @3.7.0:3.7.8')
-    #depends_on('petsc -complex -superlu-dist @3.7.0:3.7.8')
-    #depends_on('petsc -complex -superlu-dist @3.7.0:3.10.99')
     depends_on('petsc -complex -superlu-dist @3.7.0:3.7.99')
     depends_on('parmetis')
     depends_on('metis +real64')
-    #depends_on('superlu-dist@:5.2.2')
     depends_on('hdf5 +mpi +fortran +hl')
-    depends_on("adios")
-    #depends_on("dataspaces")
+    depends_on("adios +fortran")
 
     conflicts("effis",   when="-adios2")
-    depends_on('adios2', when="+adios2")
-    depends_on('kittie', when="+effis")
+    depends_on('adios2 -python')
+
+    depends_on('effis@effis', when="+effis")
 
 
     def cmake_args(self):
