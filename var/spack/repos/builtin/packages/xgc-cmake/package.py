@@ -27,7 +27,8 @@ class XgcCmake(CMakePackage):
     conflicts("effis",   when="-adios2")
     depends_on('adios2 -python')
 
-    depends_on('effis@effis', when="+effis")
+    depends_on('effis', when="+effis")
+    conflicts("effis@kittie",  when="+effis")
 
 
     def cmake_args(self):

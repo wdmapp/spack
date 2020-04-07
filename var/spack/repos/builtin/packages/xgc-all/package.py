@@ -32,7 +32,8 @@ class XgcAll(CMakePackage):
     depends_on("adios +fortran")
 
     depends_on('effis@kittie', when="@master,suchyta,gabriele +effis")
-    depends_on('effis@effis', when="@gitlab +effis")
+    depends_on('effis', when="@gitlab +effis")
+    conflicts('effis@kittie', when="@gitlab")
 
     depends_on('petsc -complex -superlu-dist @3.7.0:3.7.99',  when="@gabriele,gitlab,suchyta")
     depends_on('petsc -complex -superlu-dist', when="@master")
