@@ -36,7 +36,8 @@ class GeneAll(MakefilePackage):
     depends_on("adios2", when="+adios2")
 
     depends_on("effis@kittie", when="@gabriele +effis")
-    depends_on("effis@effis", when="@gitlab +effis")
+    depends_on("effis", when="@gitlab +effis")
+    conflicts("effis@kittie", when="@gitlab +effis")
 
 
     def setup_environment(self, spack_env, run_env):
