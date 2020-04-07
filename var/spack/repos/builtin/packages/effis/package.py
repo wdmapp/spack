@@ -11,6 +11,7 @@ class Effis(CMakePackage):
     url = homepage
 
     version('effis',   git='https://github.com/wdmapp/effis.git', branch='effis',   preferred=True)
+    version('develop',   git='https://github.com/wdmapp/effis.git', branch='develop',   preferred=False)
     version('kittie',  git='https://github.com/wdmapp/effis.git', branch='kittie',  preferred=False)
 
     variant("mpi", default=True, description="Use MPI")
