@@ -25,3 +25,12 @@ packages:
 
   kittie:
     version: [develop]
+
+  effis:
+    version: [develop]
+
+  codar-cheetah:
+    version: [develop]
+
+  yaml-cpp:
+    version: [0.6.3]
