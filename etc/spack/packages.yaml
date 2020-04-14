@@ -22,7 +22,12 @@ packages:
   #  variants: 'backend=qt5agg'
 
   libfabric:
+    version: [1.6.1]
     variants: 'fabrics=verbs'
+
+  rdma-core:
+    paths:
+      rdma-core: /autofs/nccs-svm1_sw/rhea/.swci/0-core/opt/spack/20191017/linux-rhel7-x86_64/gcc-6.2.0/rdma-core-20-l76aqtxct3qd5dxdqikbgpdwzvp5kfcu
 
   adios2:
     version: [2.5.0, develop]
@@ -30,3 +35,6 @@ packages:
 
   kittie:
     version: [develop]
+
+  effis:
+    version: [develop, effis]
