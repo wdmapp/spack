@@ -29,7 +29,7 @@ class Effis(CMakePackage):
     depends_on('py-numpy')
     depends_on('py-mpi4py', when="+mpi")
 
-    depends_on('codar-cheetah@develop', when="^python@3:")
+    depends_on('codar-cheetah', when="^python@3:")
     depends_on('py-matplotlib', when="^python@3:")
 
 
