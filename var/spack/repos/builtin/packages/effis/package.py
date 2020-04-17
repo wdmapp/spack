@@ -12,6 +12,7 @@ class Effis(CMakePackage):
 
     version('effis',   git='https://github.com/wdmapp/effis.git', branch='effis',   preferred=True)
     version('develop',   git='https://github.com/wdmapp/effis.git', branch='develop',   preferred=False)
+    version('login',   git='https://github.com/wdmapp/effis.git', branch='login',   preferred=False)
     version('kittie',  git='https://github.com/wdmapp/effis.git', branch='kittie',  preferred=False)
 
     variant("mpi", default=True, description="Use MPI")
@@ -34,12 +35,7 @@ class Effis(CMakePackage):
 
 
     def cmake_args(self):
-        args = []
-
-        if self.spec.satisfies('+python-prefix'):
-            args.append("-DPYTHON_PREFIX=ON")
-        else:
-            args.append("-DPYTHON_PREFIX=OFF")
+        args = ['-DPYTHON_PREFIX=ON']
 
         if not self.spec.satisfies('+mpi'):
             args.append("-DUSE_MPI=OFF")
