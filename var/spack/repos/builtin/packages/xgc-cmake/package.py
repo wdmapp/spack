@@ -33,6 +33,8 @@ class XgcCmake(CMakePackage):
 
     def cmake_args(self):
         args = []
+        if self.spec.satisfies('+adios2'):
+            args += ["-DXGC_USE_ADIOS2=ON"]
         if self.spec.satisfies('+effis'):
             args += ["-DEFFIS=ON"]
         if self.spec.satisfies('-tests'):
