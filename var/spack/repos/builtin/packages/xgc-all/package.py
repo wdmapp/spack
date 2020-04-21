@@ -11,7 +11,8 @@ class XgcAll(CMakePackage):
     homepage = "https://bitbucket.org/madams/epsi/overview"
     url = "https://bitbucket.org/madams/epsi/overview"
 
-    version('master',  git='https://github.com/PrincetonUniversity/XGC-Devel.git', branch='master')
+    #version('master',  git='https://github.com/PrincetonUniversity/XGC-Devel.git', branch='master')
+    version('master',  git='https://github.com/suchyta1/XGC-Devel.git', branch='effis')
     version('suchyta', git='https://github.com/suchyta1/XGC-Devel.git', branch='effis-core-edge')
     version('gabriele', git='https://code.ornl.gov/eqs/xgc-coupling.git', branch='master')
     version('gitlab', git='https://code.ornl.gov/eqs/xgc-coupling.git', branch='effis')
@@ -31,12 +32,12 @@ class XgcAll(CMakePackage):
     depends_on('adios2 -python')
     depends_on("adios +fortran")
 
-    depends_on('effis@kittie', when="@master,suchyta,gabriele +effis")
-    depends_on('effis', when="@gitlab +effis")
+    depends_on('effis@kittie', when="@suchyta,gabriele +effis")
+    depends_on('effis', when="@gitlab,master +effis")
     conflicts('effis@kittie', when="@gitlab")
 
-    depends_on('petsc -complex -superlu-dist @3.7.0:3.7.99',  when="@gabriele,gitlab,suchyta")
-    depends_on('petsc -complex -superlu-dist', when="@master")
+    depends_on('petsc -complex -superlu-dist @3.7.0:3.7.99',  when="@gabriele,gitlab,suchyta,master")
+    #depends_on('petsc -complex -superlu-dist', when="@master")
     depends_on('pspline', when="@gabriele,gitlab,suchyta")
     depends_on('camtimers +openmp', when="@gabriele,gitlab,suchyta +omp")
     depends_on('camtimers -openmp', when="@gabriele,gitlab,suchyta -omp")
