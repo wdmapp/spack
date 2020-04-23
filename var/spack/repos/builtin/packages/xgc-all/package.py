@@ -17,24 +17,29 @@ class XgcAll(CMakePackage):
     version('gabriele', git='https://code.ornl.gov/eqs/xgc-coupling.git', branch='master')
     version('gitlab', git='https://code.ornl.gov/eqs/xgc-coupling.git', branch='effis')
 
+
     variant('couple', default="none", description='Spatial coupling', values=["gene", "xgc-core", "xgc-edge", "none"])
     variant('effis', default=False, description='EFFIS support')
-    variant('omp', default=True, description="Build with OpenMP")
+    variant('openmp', default=True, description="Build with OpenMP")
     variant('gpu', default=False, description="Build GPU")
-    variant("tests",  default=True,  description='Build tests')
+    variant('fusion_io', default=False, description="Use fusion-io")
 
-    variant("convert_grid2", default=False,  description='-DCONVERT_GRID2')
-    variant("deltaf_mode2", default=False,  description='-DDELTAF_MODE2')
-    variant("init_gene_pert", default=False,  description='-DINIT_GENE_PERT')
+    xgc_options = ["convert_grid2", "deltaf_mode2", "init_gene_pert", 'col_f_positivity_opt', 'build_testing', 'neoclassical_test']
+    for option in xgc_options:
+        variant(option, default=False, description='-D{0}'.format(option.upper()))
+
 
     depends_on('mpi')
     depends_on('fftw')
     depends_on('parmetis')
     depends_on('metis +real64')
     depends_on('hdf5 +mpi +fortran +hl')
+
+    depends_on('googletest', when="+build_testing")
+    depends_on('fusion-io', when="+fusion_io")
+
     depends_on('adios2 -python')
     depends_on("adios +fortran")
-
     depends_on('effis@kittie', when="@suchyta,gabriele +effis")
     depends_on('effis', when="@gitlab,master +effis")
     conflicts('effis@kittie', when="@gitlab,master")
@@ -42,8 +47,8 @@ class XgcAll(CMakePackage):
     depends_on('petsc -complex -superlu-dist @3.7.0:3.7.99',  when="@gabriele,gitlab,suchyta,master")
     #depends_on('petsc -complex -superlu-dist', when="@master")
     depends_on('pspline', when="@gabriele,gitlab,suchyta")
-    depends_on('camtimers +openmp', when="@gabriele,gitlab,suchyta +omp")
-    depends_on('camtimers -openmp', when="@gabriele,gitlab,suchyta -omp")
+    depends_on('camtimers +openmp', when="@gabriele,gitlab,suchyta +openmp")
+    depends_on('camtimers -openmp', when="@gabriele,gitlab,suchyta -openmp")
 
     #depends_on('cuda', when='+gpu')
     #depends_on('cuda', when="@master +gpu")
@@ -53,7 +58,7 @@ class XgcAll(CMakePackage):
     depends_on('kokkos-cmake@develop +serial +openmp +cuda +enable_lambda gpu_arch=Volta70', when="@master +gpu")
 
     depends_on('cabana@develop +serial', when="@master")
-    depends_on('cabana@develop +openmp', when="@master +omp")
+    depends_on('cabana@develop +openmp', when="@master +openmp")
     depends_on('cabana@develop +cuda', when="@master +gpu")
 
     conflicts("@gabriele", when="+gpu")
@@ -125,22 +130,22 @@ class XgcAll(CMakePackage):
             filter_file('^\s*(effis\s*=.*)', "effis = yes", self.makefile)
 
 
-    @when("@suchyta +omp %gcc")
+    @when("@suchyta +openmp %gcc")
     def compiler_based(self):
         filter_file('^\s*(MOD_DIR_OPT\s*=.*)$', 'MOD_DIR_OPT = -J', self.makefile)
         filter_file('^\s*(FFLAGS\s*=.*)$', 'FFLAGS = -O3 -fPIC -ffree-line-length-0 -fopenmp', self.makefile)
 
-    @when("@suchyta +omp %pgi")
+    @when("@suchyta +openmp %pgi")
     def compiler_based(self):
         filter_file('^\s*(MOD_DIR_OPT\s*=.*)$', 'MOD_DIR_OPT = -module', self.makefile)
         filter_file('^\s*(FFLAGS\s*=.*)$', 'FFLAGS = -fast -D__PGI -fpic -mp', self.makefile)
 
-    @when("@suchyta -omp %gcc")
+    @when("@suchyta -openmp %gcc")
     def compiler_based(self):
         filter_file('^\s*(MOD_DIR_OPT\s*=.*)$', 'MOD_DIR_OPT = -J', self.makefile)
         filter_file('^\s*(FFLAGS\s*=.*)$', 'FFLAGS = -O3 -fPIC -ffree-line-length-0', self.makefile)
 
-    @when("@suchyta -omp %pgi")
+    @when("@suchyta -openmp %pgi")
     def compiler_based(self):
         filter_file('^\s*(MOD_DIR_OPT\s*=.*)$', 'MOD_DIR_OPT = -module', self.makefile)
         filter_file('^\s*(FFLAGS\s*=.*)$', 'FFLAGS = -fast -D__PGI -fpic', self.makefile)
@@ -200,12 +205,12 @@ class XgcAll(CMakePackage):
 
 
     '''
-    @when("@master +omp %gcc")
+    @when("@master +openmp %gcc")
     def compiler_based(self):
         filter_file('^\s*(MOD_DIR_OPT\s*=.*)$', 'MOD_DIR_OPT = -J', self.makefile)
         filter_file('^\s*(FFLAGS\s*=.*)$', 'FFLAGS = -O3 -fPIC -ffree-line-length-0 -fopenmp', self.makefile)
 
-    @when("@master +omp %pgi")
+    @when("@master +openmp %pgi")
     def compiler_based(self):
         filter_file('^\s*(MOD_DIR_OPT\s*=.*)$', 'MOD_DIR_OPT = -module', self.makefile)
         filter_file('^\s*(FFLAGS\s*=.*)$', 'FFLAGS = -fast -D__PGI -fpic -mp', self.makefile)
@@ -294,8 +299,6 @@ class XgcAll(CMakePackage):
 
         if self.spec.satisfies('+effis'):
             args += ["-DEFFIS=ON"]
-        if self.spec.satisfies('-tests'):
-            args += ["-DBUILD_TESTING=OFF"]
 
         """
         if self.spec.satisfies('+convert_grid2'):
@@ -304,7 +307,7 @@ class XgcAll(CMakePackage):
             args += ["-DCONVERT_GRID2=OFF"]
         """
 
-        for option in ["convert_grid2", "deltaf_mode2", "init_gene_pert"]:
+        for option in self.xgc_options:
             self.CMakeOption(option, args)
 
         #filter_file('CONVERT_GRID2', "", os.path.join('XGC_core', 'CMakeLists.txt'))  # I don't have an appropriate file to configure with yet
@@ -332,7 +335,7 @@ class XgcAll(CMakePackage):
             filter_file('-J', '-module', self.makefile)
             filter_file("-ffree-line-length-none", "", self.makefile)
 
-        if self.spec.satisfies("-omp"):
+        if self.spec.satisfies("-openmp"):
             filter_file("-fopenmp", "", self.makefile)
         elif self.spec.satisfies("%pgi"):
             filter_file("-fopenmp", "-mp", self.makefile)
