@@ -22,7 +22,10 @@ class XgcAll(CMakePackage):
     variant('omp', default=True, description="Build with OpenMP")
     variant('gpu', default=False, description="Build GPU")
     variant("tests",  default=True,  description='Build tests')
-    variant("convert_grid2", default=False,  description='CONVERT_GRID2')
+
+    variant("convert_grid2", default=False,  description='-DCONVERT_GRID2')
+    variant("deltaf_mode2", default=False,  description='-DDELTAF_MODE2')
+    variant("init_gene_pert", default=False,  description='-DINIT_GENE_PERT')
 
     depends_on('mpi')
     depends_on('fftw')
@@ -34,7 +37,7 @@ class XgcAll(CMakePackage):
 
     depends_on('effis@kittie', when="@suchyta,gabriele +effis")
     depends_on('effis', when="@gitlab,master +effis")
-    conflicts('effis@kittie', when="@gitlab")
+    conflicts('effis@kittie', when="@gitlab,master")
 
     depends_on('petsc -complex -superlu-dist @3.7.0:3.7.99',  when="@gabriele,gitlab,suchyta,master")
     #depends_on('petsc -complex -superlu-dist', when="@master")
@@ -241,6 +244,12 @@ class XgcAll(CMakePackage):
         install(self.makefile, os.path.join(self.prefix.bin))
     '''
 
+    def CMakeOption(self, option, args):
+        if self.spec.satisfies('+{0}'.format(option)):
+            args += ["-D{0}=ON".format(option.upper())]
+        elif self.spec.satisfies('-{0}'.format(option)):
+            args += ["-D{0}=OFF".format(option.upper())]
+
 
     @when("@master")
     def setup_environment(self, spack_env, run_env):
@@ -287,9 +296,19 @@ class XgcAll(CMakePackage):
             args += ["-DEFFIS=ON"]
         if self.spec.satisfies('-tests'):
             args += ["-DBUILD_TESTING=OFF"]
-        if self.spec.satisfies('-convert_grid2'):
+
+        """
+        if self.spec.satisfies('+convert_grid2'):
+            args += ["-DCONVERT_GRID2=ON"]
+        elif self.spec.satisfies('-convert_grid2'):
             args += ["-DCONVERT_GRID2=OFF"]
-            filter_file('CONVERT_GRID2', "", os.path.join('XGC_core', 'CMakeLists.txt'))  # I don't have an appropriate file to configure with yet
+        """
+
+        for option in ["convert_grid2", "deltaf_mode2", "init_gene_pert"]:
+            self.CMakeOption(option, args)
+
+        #filter_file('CONVERT_GRID2', "", os.path.join('XGC_core', 'CMakeLists.txt'))  # I don't have an appropriate file to configure with yet
+
         return args
 
     @when("@master")
