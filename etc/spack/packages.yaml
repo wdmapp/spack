@@ -32,18 +32,19 @@ packages:
       'libfabric % pgi': /usr
 
   adios2:
-    version: [develop]
+    version: [2.5.0, develop]
     variants: '+python build_type=Release'
     #variants: '-dataman -ssc +python build_type=Release'
     
   effis:
-    version: [effis]
+    version: [develop]
 
   yaml-cpp:
     version: [0.6.3]
 
-  kittie:
-    version: [develop]
+  texlive:
+    paths:
+      texlive: /usr
 
 
   ### These don't build correctly with PGI ###
