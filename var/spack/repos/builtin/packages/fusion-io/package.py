@@ -13,6 +13,7 @@ class FusionIo(MakefilePackage):
     parallel = False
     version('master', git='https://github.com/nferraro/fusion-io.git', branch='master')
     variant('doc', default=False, description='Build documentation')
+    variant('shared', default=False, description="Shared libraries")
 
     depends_on('python')
     depends_on('mpi')
@@ -43,4 +44,7 @@ class FusionIo(MakefilePackage):
 
 
     def build(self, spec, prefix):
-        make("shared")
+        if spec.satisfies("+shared"):
+            make("shared")
+        else:
+            make()
