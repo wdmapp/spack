@@ -11,8 +11,8 @@ class XgcAll(CMakePackage):
     homepage = "https://bitbucket.org/madams/epsi/overview"
     url = "https://bitbucket.org/madams/epsi/overview"
 
-    #version('master',  git='https://github.com/PrincetonUniversity/XGC-Devel.git', branch='master')
-    version('master',  git='https://github.com/suchyta1/XGC-Devel.git', branch='effis')
+    version('master',  git='https://github.com/PrincetonUniversity/XGC-Devel.git', branch='master')
+    #version('master',  git='https://github.com/suchyta1/XGC-Devel.git', branch='effis')
     version('suchyta', git='https://github.com/suchyta1/XGC-Devel.git', branch='effis-core-edge')
     version('gabriele', git='https://code.ornl.gov/eqs/xgc-coupling.git', branch='master')
     version('gitlab', git='https://code.ornl.gov/eqs/xgc-coupling.git', branch='effis')
