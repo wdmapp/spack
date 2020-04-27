@@ -53,7 +53,7 @@ class XgcAll(CMakePackage):
     #depends_on('cuda', when='+gpu')
     #depends_on('cuda', when="@master +gpu")
 
-    depends_on('kokkos-cmake@develop +serial', when="@master")
+    depends_on('kokkos-cmake@develop +serial +aggressive_vectorization cxxstd=11', when="@master")
     depends_on('kokkos-cmake@develop +openmp', when="@master +openmp")
     depends_on('kokkos-cmake@develop +serial +openmp +cuda +enable_lambda gpu_arch=Volta70', when="@master +gpu")
 
