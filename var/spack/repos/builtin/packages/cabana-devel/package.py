@@ -54,7 +54,6 @@ class CabanaDevel(CMakePackage):
         elif self.spec.satisfies("+mpi"):
             options += ['-DCMAKE_CXX_COMPILER={0}'.format(self.spec['mpi'].mpicxx)]
         else:
-            #options += ['-DCMAKE_CXX_COMPILER={0}'.format(self.compiler.cxx)]
             options += ['-DCMAKE_CXX_COMPILER={0}'.format('c++')]
 
         return options
