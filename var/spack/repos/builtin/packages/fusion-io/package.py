@@ -13,6 +13,7 @@ class FusionIo(MakefilePackage):
     parallel = False
     version('master', git='https://github.com/nferraro/fusion-io.git', branch='master')
     variant('doc', default=False, description='Build documentation')
+    variant('shared', default=False, description="Shared libraries")
 
     depends_on('python')
     depends_on('mpi')
@@ -34,8 +35,11 @@ class FusionIo(MakefilePackage):
         filter_file('^\s*(CXX\s*=\s*.*)$', 'CXX = {0}'.format(spec['mpi'].mpicxx), makefile)
         filter_file('^\s*(F90\s*=\s*.*)$', 'F90 = {0}'.format(spec['mpi'].mpifc),  makefile)
         filter_file('^\s*(INCLUDE\s*=\s*.*)$', '#INCLUDE = ', makefile)
-        filter_file('^\s*(LIBS\s*=\s*.*)$', 'LIBS = -lgfortran', makefile)
         filter_file('^\s*(LAPACKS\s*=\s*.*)$', 'LAPACK = {0}'.format(spec['lapack'].libs), makefile)
+        if spec.satisfies('%gcc'):
+            filter_file('^\s*(LIBS\s*=\s*.*)$', 'LIBS = -lgfortran', makefile)
+        else:
+            filter_file('^\s*(LIBS\s*=\s*.*)$', 'LIBS = ', makefile)
 
         if spec.satisfies("-doc"):
             makefile = "makefile"
@@ -43,4 +47,7 @@ class FusionIo(MakefilePackage):
 
 
     def build(self, spec, prefix):
-        make("shared")
+        if spec.satisfies("+shared"):
+            make("shared")
+        else:
+            make()

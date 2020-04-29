@@ -11,10 +11,9 @@ class XgcAll(CMakePackage):
     homepage = "https://bitbucket.org/madams/epsi/overview"
     url = "https://bitbucket.org/madams/epsi/overview"
 
-    #version('master',  git='https://github.com/PrincetonUniversity/XGC-Devel.git', branch='master')
-    version('master',  git='https://github.com/suchyta1/XGC-Devel.git', branch='effis')
+    version('master',  git='https://github.com/PrincetonUniversity/XGC-Devel.git', branch='master')
+    #version('master',  git='https://github.com/suchyta1/XGC-Devel.git', branch='effis')
     version('suchyta', git='https://github.com/suchyta1/XGC-Devel.git', branch='effis-core-edge')
-    version('gabriele', git='https://code.ornl.gov/eqs/xgc-coupling.git', branch='master')
     version('gitlab', git='https://code.ornl.gov/eqs/xgc-coupling.git', branch='effis')
 
 
@@ -40,20 +39,20 @@ class XgcAll(CMakePackage):
 
     depends_on('adios2 -python')
     depends_on("adios +fortran")
-    depends_on('effis@kittie', when="@suchyta,gabriele +effis")
+    depends_on('effis@kittie', when="@suchyta +effis")
     depends_on('effis', when="@gitlab,master +effis")
     conflicts('effis@kittie', when="@gitlab,master")
 
-    depends_on('petsc -complex -superlu-dist @3.7.0:3.7.99',  when="@gabriele,gitlab,suchyta,master")
+    depends_on('petsc -complex -superlu-dist @3.7.0:3.7.99',  when="@gitlab,suchyta,master")
     #depends_on('petsc -complex -superlu-dist', when="@master")
-    depends_on('pspline', when="@gabriele,gitlab,suchyta")
-    depends_on('camtimers +openmp', when="@gabriele,gitlab,suchyta +openmp")
-    depends_on('camtimers -openmp', when="@gabriele,gitlab,suchyta -openmp")
+    depends_on('pspline', when="@gitlab,suchyta")
+    depends_on('camtimers-perf', when="@gitlab,suchyta +openmp")
+    depends_on('camtimers-perf', when="@gitlab,suchyta -openmp")
 
     #depends_on('cuda', when='+gpu')
     #depends_on('cuda', when="@master +gpu")
 
-    depends_on('kokkos-cmake@develop +serial', when="@master")
+    depends_on('kokkos-cmake@develop +serial +aggressive_vectorization cxxstd=11', when="@master")
     depends_on('kokkos-cmake@develop +openmp', when="@master +openmp")
     depends_on('kokkos-cmake@develop +serial +openmp +cuda +enable_lambda gpu_arch=Volta70', when="@master +gpu")
 
@@ -61,7 +60,6 @@ class XgcAll(CMakePackage):
     depends_on('cabana@develop +openmp', when="@master +openmp")
     depends_on('cabana@develop +cuda', when="@master +gpu")
 
-    conflicts("@gabriele", when="+gpu")
     conflicts("@gitlab", when="+gpu")
 
     parallel = False
@@ -92,8 +90,8 @@ class XgcAll(CMakePackage):
         filter_file('^\s*(PETSC_DIR\s*\?=.*)$', 'PETSC_DIR = {0}'.format(spec['petsc'].prefix), self.makefile)
         filter_file('^\s*(PETSC_LIB\s*=.*)$', 'LIB = ${PETSC_KSP_LIB}', self.makefile)
 
-        filter_file('^\s*(CAMTIMERS_INC\s*=.*)$', 'CAMTIMERS_INC = -I{0}'.format(spec['camtimers'].prefix.include), self.makefile)
-        filter_file('^\s*(CAMTIMERS_LIB\s*=.*)$', 'CAMTIMERS_LIB = -L{0} -ltimers'.format(spec['camtimers'].prefix.lib), self.makefile)
+        filter_file('^\s*(CAMTIMERS_INC\s*=.*)$', 'CAMTIMERS_INC = -I{0}'.format(spec['camtimers-perf'].prefix.include), self.makefile)
+        filter_file('^\s*(CAMTIMERS_LIB\s*=.*)$', 'CAMTIMERS_LIB = -L{0} -ltimers'.format(spec['camtimers-perf'].prefix.lib), self.makefile)
 
         filter_file('^\s*(FFTW_INC\s*=.*)$', 'FFTW_INC = -I{0}'.format(spec['fftw'].prefix.include), self.makefile)
         filter_file('^\s*(FFTW_LIB\s*=.*)$', 'FFTW_LIB = -L{0} -lfftw3'.format(spec['fftw'].prefix.lib), self.makefile)
@@ -204,51 +202,6 @@ class XgcAll(CMakePackage):
         install(self.makefile, os.path.join(self.prefix.bin))
 
 
-    '''
-    @when("@master +openmp %gcc")
-    def compiler_based(self):
-        filter_file('^\s*(MOD_DIR_OPT\s*=.*)$', 'MOD_DIR_OPT = -J', self.makefile)
-        filter_file('^\s*(FFLAGS\s*=.*)$', 'FFLAGS = -O3 -fPIC -ffree-line-length-0 -fopenmp', self.makefile)
-
-    @when("@master +openmp %pgi")
-    def compiler_based(self):
-        filter_file('^\s*(MOD_DIR_OPT\s*=.*)$', 'MOD_DIR_OPT = -module', self.makefile)
-        filter_file('^\s*(FFLAGS\s*=.*)$', 'FFLAGS = -fast -D__PGI -fpic -mp', self.makefile)
-
-
-    @when("@master +gpu")
-    def setup_environment(self, spack_env, run_env):
-        spack_env.set("XGC_PLATFORM", "summit")
-        """
-        if self.spec.satisfies("%gcc"):
-            raise ValueError("GPU compilation requires PGI")
-        """
-        self.makefile = os.path.join("build", "make.inc.summit")
-
-    @when("@master +gpu")
-    def cmake(self, spec, prefix):
-        self.edit(self.spec, prefix)
-        self.compiler_based()
-        filter_file('^\s*(PSPLINE_INC\s*=.*)$', 'PSPLINE_INC = -I{0}'.format(spec[self.pspline].prefix.include), self.makefile)
-        filter_file('^\s*(XGC_FLAGS\s*\+=\s*-DITER_GRID)', 'XGC_FLAGS += -DDELTAF_MODE2 -DITER_GRID', self.flagfile)
-        filter_file('^\s*(CXX\s*=.*)$', 'CXX = $(KOKKOS_SRC_DIR)/bin/nvcc_wrapper --verbose', self.makefile)
-        filter_file('^\s*(NVCC_WRAPPER_DEFAULT_COMPILER\s*=.*)$', "NVCC_WRAPPER_DEFAULT_COMPILER = {0}".format(spec['mpi'].mpicxx), self.makefile)
-        #filter_file('^\s*(NVCC_WRAPPER_DEFAULT_COMPILER\s*=.*)$', "NVCC_WRAPPER_DEFAULT_COMPILER = {0}".format("/autofs/nccs-svm1_sw/summit/.swci/1-compute/opt/spack/20180914/linux-rhel7-ppc64le/gcc-9.1.0/spectrum-mpi-10.3.0.1-20190611-2juhkwlddpdydl2yasmuia2slpev6fl5/bin/mpicc"), self.makefile)
-
-    @when("@master +gpu")
-    def build(self, spec, prefix):
-        make('xgc-es-cab', parallel=False)
-        #make('xgc-es-gpu', parallel=False)
-
-    @when("@master +gpu")
-    def install(self, spec, prefix):
-        binary = "xgc-es-cab"
-        #binary = "xgc-es-gpu"
-        mkdirp(self.prefix.bin)
-        install(os.path.join("xgc_build", binary), self.prefix.bin, binary)
-        install(self.makefile, os.path.join(self.prefix.bin))
-    '''
-
     def CMakeOption(self, option, args):
         if self.spec.satisfies('+{0}'.format(option)):
             args += ["-D{0}=ON".format(option.upper())]
@@ -322,11 +275,11 @@ class XgcAll(CMakePackage):
             install(join_path(self.build_directory, "bin", "xgc-es-cpp-gpu"), self.prefix.bin)
 
 
-    @when("@gabriele,gitlab -gpu")
+    @when("@gitlab -gpu")
     def setup_environment(self, spack_env, run_env):
         self.makefile = os.path.join("Makefile.theta")
 
-    @when("@gabriele,gitlab -gpu")
+    @when("@gitlab -gpu")
     def cmake(self, spec, prefix):
         self.edit(spec, prefix)
         filter_file('^\s*(PSPLINE_INC\s*=.*)$', 'PSPLINE_INC = -I{0}/mod'.format(spec["pspline"].prefix), self.makefile)
@@ -340,11 +293,11 @@ class XgcAll(CMakePackage):
         elif self.spec.satisfies("%pgi"):
             filter_file("-fopenmp", "-mp", self.makefile)
 
-    @when("@gabriele,gitlab -gpu")
+    @when("@gitlab -gpu")
     def build(self, spec, prefix):
         make('-f', self.makefile, 'es', parallel=False)
 
-    @when("@gabriele,gitlab -gpu")
+    @when("@gitlab -gpu")
     def install(self, spec, prefix):
         mkdirp(self.prefix.bin)
         binary = "xgc-es"
