@@ -20,7 +20,7 @@ packages:
     variants: "fabrics=sockets"
 
   adios2:
-    version: [develop]
+    version: [2.5.0, develop]
     variants: '+python build_type=Release'
 
   kittie:
