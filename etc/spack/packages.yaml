@@ -86,13 +86,16 @@ packages:
       'zeromq % xl@16.1.1-3': /autofs/nccs-svm1_sw/summit/.swci/1-compute/opt/spack/20180914/linux-rhel7-ppc64le/xl-16.1.1-3/zeromq-4.2.5-ieaqpm563xoiheud72rc4vecqoljux6j
 
   adios2:
-    version: [develop]
+    version: [2.5.0, develop]
     variants: '+python +mpi +sst +ssc +dataman +sz build_type=Release'
     #variants: '+mpi +sst -ssc -dataman -sz build_type=Release'
     #paths:
       #'adios2 %pgi@19.4': /ccs/home/esuchyta/spack/view/adios2-nopython
       #  'adios2 %pgi@19.4': /ccs/home/shku/Software/install/summit/adios2/devel/pgi19.4
 
+  effis:
+    version: [develop]
+    
   kittie:
     version: [develop]
     variants: '+mpi +python-prefix -touch -fine-time'
