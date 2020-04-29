@@ -17,6 +17,7 @@ class XgcDevel(MakefilePackage):
     variant('effis', default=False, description='EFFIS support')
     variant('openmp', default=False, description="Build with OpenMP")
     variant('openacc', default=False, description="Build with OpenACC")
+    variant('debug', default=False, description="Use debug symbols")
     variant('cuda', default=False, description="Build Cuda")
     variant('cpu_arch', default="none", description="CPU architecture")
     variant('gpu_arch', default="none", description="GPU architecture")
@@ -53,6 +54,14 @@ class XgcDevel(MakefilePackage):
     depends_on('cabana-devel@develop +openmp', when="+openmp")
     depends_on('cabana-devel@develop +cuda', when="+cuda")
 
+    
+    def AddDebugOpt(self, flags, opt):
+        if not self.spec.satisfies("+debug"):
+            flags = '{0} {1}'.format(flags, opt)
+        else:
+            flags = '{0} -g'.format(flags)
+        return flags
+
 
     def Append(self, line):
         self.makestream.write("\n" + line)
@@ -66,6 +75,7 @@ class XgcDevel(MakefilePackage):
     def edit(self, spec, prefix):
         flagfile = os.path.join("build", "xgc_flags.mk")
         makefile = os.path.join("build", "make.inc.{0}".format(self.platform))
+        rulefile = os.path.join("build", "rules.mk")
 
         opts = ["-DITER_GRID", "-DCAM_TIMERS", "-DADIOS2", "-DFFTW3"]
         for option in self.xgc_options:
@@ -86,16 +96,18 @@ class XgcDevel(MakefilePackage):
             cxx = spec['mpi'].mpicxx
 
 
-        if spec.satisfies("%gcc"):
+        if spec.satisfies("%gcc") or spec.satisfies("%clang"):
             mod = "-J"
             openmp = "-fopenmp"
-            #other = '-O3 -fPIC -ffree-line-length-0'
             other = '-fPIC -ffree-line-length-0'
+            opt = '-03'
         elif spec.satisfies("%pgi"):
             mod = "-module"
             openmp = "-mp"
-            other = '-fast -D__PGI -fpic'
+            other = ' -D__PGI -fpic'
+            opt = '-fast'
         flags = other
+        flags = self.AddDebugOpt(flags, opt)
         if spec.satisfies("+openmp"):
             flags = '{0} {1}'.format(flags, openmp)
 
@@ -108,7 +120,7 @@ class XgcDevel(MakefilePackage):
         self.Append('LD_CAB = {0}'.format(spec['mpi'].mpicxx))
         self.Append('CXX = {0}'.format(cxx))
         self.Append('NVCC_WRAPPER_DEFAULT_COMPILER = {0}'.format(spec['mpi'].mpicxx))
-        self.Append('FFLAGS = -g {0}'.format(flags))
+        self.Append('FFLAGS = {0}'.format(flags))
         self.Append('MOD_DIR_OPT = {0}'.format(mod))
 
         self.Append('ADIOS_INC = {2} -I{0} -I{0}/adios2/fortran -I{1}'.format(spec['adios2'].prefix.include, spec['adios'].prefix.include, effis_inc))
@@ -137,6 +149,9 @@ class XgcDevel(MakefilePackage):
         extra = ""
         if spec.satisfies("+openmp"):
             extra = "{0} {1}".format(extra, openmp)
+        elif spec.satisfies("-cuda"):
+            filter_file('-DUSE_CAB_OMP=1', '-DUSE_CAB_OMP=0', rulefile)
+            
         if not spec.satisfies("cpu_arch=none"):
             extra = "{0} -arch={1}".format(extra, spec.varints['cpu_arch'])
         if spec.satisfies("+cuda"):
@@ -144,9 +159,10 @@ class XgcDevel(MakefilePackage):
             self.Append("CUDA_REG_COUNT = 128")
             self.Append("NVCC_GCC_PATH = g++")
             self.Append("GPU_ARCH = {0}".format(spec.variants['gpu_arch']))
+
+        extra = self.AddDebugOpt(extra, opt)
             
-        #self.Append("CAB_CXX_FLAGS = -pedantic -O3 -std=c++11 {0}".format(extra))
-        self.Append("CAB_CXX_FLAGS = -pedantic -g -std=c++11 {0}".format(extra))
+        self.Append("CAB_CXX_FLAGS = -pedantic -std=c++11 {0}".format(extra))
         self.Append("CAB_FTN_FLAGS = ")
         
         if spec.satisfies("+openacc"):
