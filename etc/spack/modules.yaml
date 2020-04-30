@@ -35,7 +35,7 @@ modules:
       - PYTHONPATH
     lib64/python3.7/site-packages:
       - PYTHONPATH
-    lib/python2.7/site-packages:
-      - PYTHONPATH
-    lib64/python3.7/site-packages:
-      - PYTHONPATH
+    #lib/python2.7/site-packages:
+    #  - PYTHONPATH
+    #lib64/python2.7/site-packages:
+    #  - PYTHONPATH
