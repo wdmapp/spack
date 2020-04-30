@@ -36,10 +36,14 @@ class FusionIo(MakefilePackage):
         filter_file('^\s*(F90\s*=\s*.*)$', 'F90 = {0}'.format(spec['mpi'].mpifc),  makefile)
         filter_file('^\s*(INCLUDE\s*=\s*.*)$', '#INCLUDE = ', makefile)
         filter_file('^\s*(LAPACKS\s*=\s*.*)$', 'LAPACK = {0}'.format(spec['lapack'].libs), makefile)
+        
         if spec.satisfies('%gcc'):
             filter_file('^\s*(LIBS\s*=\s*.*)$', 'LIBS = -lgfortran', makefile)
         else:
             filter_file('^\s*(LIBS\s*=\s*.*)$', 'LIBS = ', makefile)
+            if spec.satisfies('%pgi'):
+                filter_file('^\s*(CFLAGS\s*=\s*.*)$', 'CFLAGS = -fpic', makefile)
+                filter_file('^\s*(F90FLAGS\s*=\s*.*)$', 'F90FLAGS = -r8 -fpic', makefile)
 
         if spec.satisfies("-doc"):
             makefile = "makefile"
