@@ -155,6 +155,7 @@ class XgcDevel(MakefilePackage):
             extra = "{0} {1}".format(extra, openmp)
         elif spec.satisfies("-cuda"):
             filter_file('-DUSE_CAB_OMP=1', '-DUSE_CAB_OMP=0', rulefile)
+            filter_file('-DUSE_ARRAY_REPLICATION', '-UUSE_ARRAY_REPLICATION', rulefile)
             
         if not spec.satisfies("cpu_arch=none"):
             extra = "{0} -arch={1}".format(extra, spec.varints['cpu_arch'])
