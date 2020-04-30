@@ -116,10 +116,14 @@ class XgcDevel(MakefilePackage):
         self.Append("effis = yes")
         self.Append('FC = {0}'.format(spec['mpi'].mpifc))
         self.Append('CC = {0}'.format(spec['mpi'].mpicc))
-        self.Append('LD = {0}'.format(spec['mpi'].mpifc))
-        self.Append('LD_CAB = {0}'.format(spec['mpi'].mpicxx))
         self.Append('CXX = {0}'.format(cxx))
         self.Append('NVCC_WRAPPER_DEFAULT_COMPILER = {0}'.format(spec['mpi'].mpicxx))
+        self.Append('LD = {0}'.format(spec['mpi'].mpifc))
+        if spec.satisfies('%gcc'):
+            self.Append('LD_CAB = {0}'.format(spec['mpi'].mpicxx))
+        elif spec.satisfies('%pgi'):
+            self.Append('LD_CAB = {0}'.format(spec['mpi'].mpifc))
+
         self.Append('FFLAGS = {0}'.format(flags))
         self.Append('MOD_DIR_OPT = {0}'.format(mod))
 
@@ -165,6 +169,9 @@ class XgcDevel(MakefilePackage):
         self.Append("CAB_CXX_FLAGS = -pedantic -std=c++11 {0}".format(extra))
         self.Append("CAB_FTN_FLAGS = ")
         
+        if spec.satisfies("%pgi"):
+            self.Append("CAB_LINK_FLAGS = -pgc++libs")
+
         if spec.satisfies("+openacc"):
             self.Append("ACC_FFLAGS = ")
             self.Append("CAB_LINK_FLAGS = ")

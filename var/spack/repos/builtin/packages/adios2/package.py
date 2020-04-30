@@ -147,6 +147,13 @@ class Adios2(CMakePackage):
                 'ON' if '+endian_reverse' in spec else 'OFF'),
         ]
 
+        if self.spec.satisfies('+mpi'):
+            args += [
+                    "-DMPI_CXX_COMPILER={0}".format(spec['mpi'].mpicxx),
+                    "-DMPI_C_COMPILER={0}".format(spec['mpi'].mpicc),
+                    "-DMPI_Fortran_COMPILER={0}".format(spec['mpi'].mpifc)
+                    ]
+
         if self.spec.version >= Version('2.4.0'):
             args.append('-DADIOS2_USE_Blosc={0}'.format(
                 'ON' if '+blosc' in spec else 'OFF'))
