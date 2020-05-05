@@ -152,23 +152,13 @@ class KokkosCmake(CMakePackage):
     parallel = False
 
 
-    def setup_environment(self, spack_env, run_env):
-        if self.spec.satisfies('+cuda'):
-            spack_env.set('NVCC_WRAPPER_DEFAULT_COMPILER', self.compiler.cxx)
-            """
-            if self.spec.satisfies('%gcc'):
-                spack_env.set('NVCC_WRAPPER_DEFAULT_COMPILER', self.compiler.cxx)
-            else:
-                spack_env.set('NVCC_WRAPPER_DEFAULT_COMPILER', 'g++')
-            """
-
     def cmake_args(self):
 
-        args = ['-DCMAKE_CXX_COMPILER=c++']
         if self.spec.satisfies('+cuda'):
+            env['NVCC_WRAPPER_DEFAULT_COMPILER'] = self.compiler.cxx
             args = ['-DCMAKE_CXX_COMPILER={0}'.format(join_path(self.stage.source_path, 'bin', 'nvcc_wrapper'))]
         else:
-            args = ['-DCMAKE_CXX_COMPILER=c++']
+            args = ['-DCMAKE_CXX_COMPILER={0}'.format(env['CXX'])]
 
         if self.spec.variants['gpu_arch'].value != 'none':
             args += ['-DKokkos_ARCH_{0}=ON'.format(self.spec.variants['gpu_arch'].value.upper())]

@@ -91,6 +91,7 @@ class Tau(Package):
     depends_on('cuda', when='+cuda')
     depends_on('gasnet', when='+gasnet')
     depends_on('adios2@2.5.0:', when="+adios")
+    depends_on('zlib')
 
     # Elf only required from 2.28.1 on
     conflicts('+libelf', when='@:2.28.0')
@@ -115,11 +116,16 @@ class Tau(Package):
         #
         # In the following we give TAU what he expects and put compilers into
         # PATH
+        """
         compiler_path = os.path.dirname(self.compiler.cc)
         os.environ['PATH'] = ':'.join([compiler_path, os.environ['PATH']])
+        """
 
+        """
         compiler_options = ['-c++=%s' % os.path.basename(self.compiler.cxx),
                             '-cc=%s' % os.path.basename(self.compiler.cc)]
+        """
+        compiler_options = ['-c++=c++', '-cc=cc']
 
         if '+fortran' in spec and self.compiler.fc:
             compiler_options.append('-fortran=%s' % self.compiler.fc_names[0])
@@ -220,7 +226,7 @@ class Tau(Package):
             options.append('-PROFILEPHASE')
 
         if '+adios' in spec:
-            options.append('-adios={0}'.format(spec['adios'].prefix))
+            options.append('-adios={0}'.format(spec['adios2'].prefix))
 
         if '+python' in spec:
             options.append('-python')
@@ -252,6 +258,7 @@ class Tau(Package):
 
         compiler_specific_options = self.set_compiler_options(spec)
         options.extend(compiler_specific_options)
+        print(which("g++").path)
         configure(*options)
         make("install")
 
