@@ -45,12 +45,14 @@ class XgcDevel(MakefilePackage):
     conflicts('effis@kittie')
 
     depends_on('kokkos-cmake@3.1.00 +serial +aggressive_vectorization cxxstd=11')
-    depends_on('kokkos-cmake@3.1.00 +openmp', when="+openmp")
     depends_on('cabana@develop +mpi')
+    depends_on('kokkos-cmake@3.1.00 +openmp', when="+openmp")
+    depends_on('cabana@develop +openmp', when="+openmp")
 
     for value in cuda_values:
         when = "cuda={0}".format(value)
         depends_on('kokkos-cmake@3.1.00 +cuda +enable_lambda gpu_arch={0}'.format(value), when=when)
+        depends_on('cabana@develop +cuda', when=when)
         depends_on('cuda', when=when)
 
     
