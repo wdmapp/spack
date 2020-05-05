@@ -33,7 +33,6 @@ class CabanaDevel(CMakePackage):
 
     def setup_environment(self, spack_env, run_env):
         if self.spec.satisfies('+cuda'):
-            #spack_env.set('NVCC_WRAPPER_DEFAULT_COMPILER', self.compiler.cxx)
             spack_env.set('NVCC_WRAPPER_DEFAULT_COMPILER', 'g++')
 
 
@@ -50,10 +49,10 @@ class CabanaDevel(CMakePackage):
         ]
 
         if self.spec.satisfies("+cuda"):
-            options += ['-DCMAKE_CXX_COMPILER={0}'.format(join_path(self.spec['kokkos-cmake'].prefix.bin, 'nvcc_wrapper'))]
+            options += ['-DCMAKE_CXX_COMPILER={0}'.format(join_path(self.spec['kokkos'].prefix.bin, 'nvcc_wrapper'))]
         elif self.spec.satisfies("+mpi"):
             options += ['-DCMAKE_CXX_COMPILER={0}'.format(self.spec['mpi'].mpicxx)]
         else:
-            options += ['-DCMAKE_CXX_COMPILER={0}'.format('c++')]
+            options += ['-DCMAKE_CXX_COMPILER=c++']
 
         return options
