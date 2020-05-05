@@ -48,6 +48,14 @@ packages:
     paths:
       texlive: /usr
 
+  libelf:
+    paths:
+      libelf: /usr/x86_64-linux-gnu/
+
+  libdwarf:
+    paths:
+      libdwarf: /usr/x86_64-linux-gnu/
+
 
   ### These don't build correctly with PGI ###
   c-blosc:
