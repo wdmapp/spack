@@ -117,7 +117,7 @@ class Adios2(CMakePackage):
 
     def cmake_args(self):
         filter_file('(COMPONENTS Interp Libs numpy)', 'COMPONENTS Interp Libs', os.path.join('cmake', 'DetectOptions.cmake'))
-        if self.spec.version >= Version('2.5.0'):
+        if self.spec.version <= Version('2.5.0'):
             filter_file('-flto\$\{linker_append\}', '-fno-lto', "thirdparty/pybind11/pybind11/tools/pybind11Tools.cmake")
         spec = self.spec
 
