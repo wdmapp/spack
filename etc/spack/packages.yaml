@@ -6,7 +6,7 @@ packages:
     providers:
       blas: [netlib-lapack]
       lapack: [netlib-lapack]
-      mpi: [mpich, openmpi]
+      mpi: [mpich]
       scalapack: [netlib-scalapack]
 
   mpich: 
@@ -14,14 +14,9 @@ packages:
     paths:
       'mpich@3.3 %gcc@7.4.0': /usr
 
-  openmpi:
-    version: [3.1.3]
-    paths:
-      'openmpi@3.1.3 %pgi@19.10': /opt/pgi/linux86-64-llvm/2019/mpi/openmpi-3.1.3
-
   cuda:
     paths:
-      cuda: /usr
+      cuda: /usr/local/cuda-10.2
 
   libfabric:
     variants: "fabrics=sockets"
@@ -31,13 +26,23 @@ packages:
   adios2:
     version: [2.5.0, develop]
     variants: '+python build_type=Release'
-    #variants: '-dataman -ssc +python build_type=Release'
     
   effis:
     version: [develop]
 
   yaml-cpp:
     version: [0.6.3]
+
+  kokkos-cmake:
+    version: [3.1.00]
+    variants: 'host_arch=SKX'
+    paths:
+      'kokkos-cmake +serial +aggressive_vectorization cxxstd=11 +openmp host_arch=SKX +cuda +enable_lambda gpu_arch=Turing75 % pgi': /home/eqs/spack/opt/spack/linux-ubuntu18.04-skylake_avx512/gcc-7.4.0/kokkos-cmake-3.1.00-rbcd77cpooz47dqquxxqcfgm5x3usisj
+  
+  cabana:
+    version: [develop]
+    paths:
+      'cabana +mpi % pgi ^kokkos-cmake@3.1.00 +serial +aggressive_vectorization cxxstd=11 host_arch=SKX +openmp +cuda +enable_lambda gpu_arch=Turing75': /home/eqs/spack/opt/spack/linux-ubuntu18.04-skylake_avx512/gcc-7.4.0/cabana-develop-eammc26sg5sqbwyv7v7lcehkbxdrfpcv
 
   texlive:
     paths:
@@ -52,6 +57,10 @@ packages:
   cmake:
     paths:
       'cmake % pgi': /home/eqs/spack/opt/spack/linux-ubuntu18.04-skylake_avx512/gcc-7.4.0/cmake-3.15.4-ws6w22pub7i7durz7njjdzg2hhfxytvc
+
+  findutils:
+    paths:
+      'findutils % pgi': /home/eqs/spack/opt/spack/linux-ubuntu18.04-skylake_avx512/gcc-7.4.0/findutils-4.6.0-squc4ajl2hmbp2kenqicu3djkhwll2xb
 
   fftw:
     paths:
@@ -118,11 +127,6 @@ packages:
     paths:
       'py-numpy % pgi ^ python@2.7.16': /home/eqs/spack/opt/spack/linux-ubuntu18.04-skylake_avx512/gcc-7.4.0/py-numpy-1.16.5-of7pnknf2jzxps3ebao2wwupnaprtvp7
       'py-numpy % pgi ^ python@3.7.4':  /home/eqs/spack/opt/spack/linux-ubuntu18.04-skylake_avx512/gcc-7.4.0/py-numpy-1.16.5-eghbdm2xevn65nrxwufwd4bfbqkhpcfx
-
-  #py-pyyaml:
-  #  paths:
-  #    'py-pyyaml % pgi ^ python@2.7.16': /home/eqs/spack/opt/spack/linux-ubuntu18.04-skylake_avx512/gcc-7.4.0/py-pyyaml-5.1.2-pip22pg5tyiqe2m6sde3rgpydur2ybek
-  #    'py-pyyaml % pgi ^ python@3.7.4':  /home/eqs/spack/opt/spack/linux-ubuntu18.04-skylake_avx512/gcc-7.4.0/py-pyyaml-5.1.2-akdm64a75apokhhluixf34uclgy3oksj
 
   zeromq:
     paths:
