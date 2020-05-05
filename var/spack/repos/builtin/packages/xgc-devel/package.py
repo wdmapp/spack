@@ -22,6 +22,9 @@ class XgcDevel(MakefilePackage):
     cuda_values = ["Volta70", "Turing75"]
     variant('cuda', default="none", values=cuda_values, description="Build Cuda")
 
+    cpu_values = ["SKX", "Power9"]
+    variant('host_arch', default="none", values=cpu_values, description="CPU optimization")
+
     xgc_options = ["convert_grid2", "deltaf_mode2", "init_gene_pert", 'col_f_positivity_opt', 'build_testing', 'neoclassical_test', "fusion_io"]
     for option in xgc_options:
         variant(option, default=False, description='-D{0}'.format(option.upper()))
@@ -55,6 +58,10 @@ class XgcDevel(MakefilePackage):
         depends_on('cabana@develop +cuda', when=when)
         depends_on('cuda', when=when)
 
+    for value in cpu_values:
+        when = "host_arch={0}".format(value)
+        depends_on('kokkos-cmake@3.1.00 {0}'.format(when), when=when)
+
     
     def AddDebugOpt(self, flags, opt):
         if not self.spec.satisfies("+debug"):
@@ -68,23 +75,22 @@ class XgcDevel(MakefilePackage):
         self.makestream.write("\n" + line)
 
 
+    """
     def setup_environment(self, spack_env, run_env):
         self.platform = "spack"
         spack_env.set("XGC_PLATFORM", self.platform)
 
         if not self.spec.satisfies("cuda=none"):
             spack_env.set('NVCC_WRAPPER_DEFAULT_COMPILER', self.compiler.cxx)
-            """
-            if self.spec.satisfies('%gcc'):
-                spack_env.set('NVCC_WRAPPER_DEFAULT_COMPILER', self.compiler.cxx)
-            else:
-                spack_env.set('NVCC_WRAPPER_DEFAULT_COMPILER', 'g++')
-            """
+    """
 
 
     def edit(self, spec, prefix):
+        platform = "spack"
+        env["XGC_PLATFORM"] = platform
+
         flagfile = os.path.join("build", "xgc_flags.mk")
-        makefile = os.path.join("build", "make.inc.{0}".format(self.platform))
+        makefile = os.path.join("build", "make.inc.{0}".format(platform))
         rulefile = os.path.join("build", "rules.mk")
         corefile = os.path.join("XGC_core", "cpp", "Makefile")
 
@@ -103,6 +109,7 @@ class XgcDevel(MakefilePackage):
             effis_lib = "-lkittie_f"
             
         if not spec.satisfies("cuda=none"):
+            env['NVCC_WRAPPER_DEFAULT_COMPILER'] = self.compiler.cxx
             cxx = which("nvcc_wrapper").path
         else:
             cxx = spec['mpi'].mpicxx
