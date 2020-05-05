@@ -24,7 +24,7 @@ class Cabana(CMakePackage):
     depends_on("mpi", when="+mpi")
     depends_on("cmake@3.9:", type='build')
 
-    depends_on("kokkos-cmake +serial +aggressive_vectorization cxxstd=11'")
+    depends_on("kokkos-cmake +serial +aggressive_vectorization cxxstd=11")
     depends_on("kokkos-cmake +openmp", when="+openmp")
     depends_on("kokkos-cmake +cuda", when="+cuda")
 
