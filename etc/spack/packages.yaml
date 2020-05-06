@@ -35,13 +35,13 @@ packages:
 
   kokkos-cmake:
     version: [3.1.00]
-    paths:
-      'kokkos-cmake +serial +aggressive_vectorization cxxstd=11 +openmp +cuda +enable_lambda gpu_arch=Turing75 % pgi': /home/eqs/spack/opt/spack/linux-ubuntu18.04-skylake_avx512/gcc-7.4.0/kokkos-cmake-3.1.00-wkcjjgck4uhxpoh2xe6ju4l4vpzglbxh
+    #paths:
+    #  'kokkos-cmake +serial +aggressive_vectorization cxxstd=11 +openmp +cuda +enable_lambda gpu_arch=Turing75 % pgi': /home/eqs/spack/opt/spack/linux-ubuntu18.04-skylake_avx512/gcc-7.4.0/kokkos-cmake-3.1.00-wkcjjgck4uhxpoh2xe6ju4l4vpzglbxh
   
   cabana:
     version: [develop]
-    paths:
-      'cabana +mpi +openmp +cuda % pgi': /home/eqs/spack/opt/spack/linux-ubuntu18.04-skylake_avx512/gcc-7.4.0/cabana-develop-hideyyr6hexxpayzeruz7i2rx3ilfwi6
+    #paths:
+    #  'cabana +mpi +openmp +cuda % pgi': /home/eqs/spack/opt/spack/linux-ubuntu18.04-skylake_avx512/gcc-7.4.0/cabana-develop-hideyyr6hexxpayzeruz7i2rx3ilfwi6
 
   texlive:
     paths:
