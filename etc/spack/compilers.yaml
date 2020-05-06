@@ -1,5 +1,4 @@
 compilers:
-
 - compiler:
     modules: []
     environment: {}
@@ -57,3 +56,30 @@ compilers:
     modules: []
     environment: {}
     extra_rpaths: []
+- compiler:
+    spec: pgi@19.9
+    paths:
+      cc: /autofs/nccs-svm1_sw/summit/.swci/0-core/opt/spack/20180914/linux-rhel7-ppc64le/gcc-4.8.5/pgi-19.9-6rlh73dtf3lmbm6v7r3fkh7tnbeq53hc/linuxpower/19.9/bin/pgcc
+      cxx: /autofs/nccs-svm1_sw/summit/.swci/0-core/opt/spack/20180914/linux-rhel7-ppc64le/gcc-4.8.5/pgi-19.9-6rlh73dtf3lmbm6v7r3fkh7tnbeq53hc/linuxpower/19.9/bin/pgc++
+      f77: /autofs/nccs-svm1_sw/summit/.swci/0-core/opt/spack/20180914/linux-rhel7-ppc64le/gcc-4.8.5/pgi-19.9-6rlh73dtf3lmbm6v7r3fkh7tnbeq53hc/linuxpower/19.9/bin/pgfortran
+      fc: /autofs/nccs-svm1_sw/summit/.swci/0-core/opt/spack/20180914/linux-rhel7-ppc64le/gcc-4.8.5/pgi-19.9-6rlh73dtf3lmbm6v7r3fkh7tnbeq53hc/linuxpower/19.9/bin/pgf90
+    flags: {}
+    operating_system: rhel7
+    target: ppc64le
+    modules: []
+    environment: {}
+    extra_rpaths: []
+- compiler:
+    spec: gcc@8.1.1
+    paths:
+      cc: /sw/summit/gcc/8.1.1/bin/gcc
+      cxx: /sw/summit/gcc/8.1.1/bin/g++
+      f77: /sw/summit/gcc/8.1.1/bin/gfortran
+      fc: /sw/summit/gcc/8.1.1/bin/gfortran
+    flags: {}
+    operating_system: rhel7
+    target: ppc64le
+    modules: []
+    environment: {}
+    extra_rpaths:
+      - /sw/summit/gcc/8.1.1/lib64

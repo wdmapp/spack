@@ -7,44 +7,21 @@ packages:
       mpi: [spectrum-mpi]
       scalapack: [netlib-scalapack]
 
-  spectrum-mpi: 
-    version: [summit]
-    paths:
-      'spectrum-mpi@summit %gcc@9.1.0': /autofs/nccs-svm1_sw/summit/.swci/1-compute/opt/spack/20180914/linux-rhel7-ppc64le/gcc-9.1.0/spectrum-mpi-10.3.0.1-20190611-2juhkwlddpdydl2yasmuia2slpev6fl5
-      'spectrum-mpi@summit %gcc@7.4.0': /autofs/nccs-svm1_sw/summit/.swci/1-compute/opt/spack/20180914/linux-rhel7-ppc64le/gcc-7.4.0/spectrum-mpi-10.3.0.1-20190611-mto4jwjeylfm6xdlb5yhaphpgnyzcvh7
-      'spectrum-mpi@summit %pgi@19.10':  /autofs/nccs-svm1_sw/summit/.swci/1-compute/opt/spack/20180914/linux-rhel7-ppc64le/pgi-19.10/spectrum-mpi-10.3.0.1-20190611-nmslyxjlrtuclxiuehkgtdmmvrb5r4lk
-
-  fftw:
-    paths:
-      'fftw %gcc@9.1.0': /autofs/nccs-svm1_sw/summit/.swci/1-compute/opt/spack/20180914/linux-rhel7-ppc64le/gcc-6.4.0/fftw-3.3.8-fr4h5sbpztnrzxxtbrkpuicqmksqs2wl
-      'fftw %gcc@8.1.1': /autofs/nccs-svm1_sw/summit/.swci/1-compute/opt/spack/20180914/linux-rhel7-ppc64le/gcc-6.4.0/fftw-3.3.8-fr4h5sbpztnrzxxtbrkpuicqmksqs2wl
-      'fftw %gcc@7.4.0': /autofs/nccs-svm1_sw/summit/.swci/1-compute/opt/spack/20180914/linux-rhel7-ppc64le/gcc-6.4.0/fftw-3.3.8-fr4h5sbpztnrzxxtbrkpuicqmksqs2wl
-      'fftw %gcc@6.4.0': /autofs/nccs-svm1_sw/summit/.swci/1-compute/opt/spack/20180914/linux-rhel7-ppc64le/gcc-6.4.0/fftw-3.3.8-fr4h5sbpztnrzxxtbrkpuicqmksqs2wl
-      'fftw %pgi@19.10':  /autofs/nccs-svm1_sw/summit/.swci/1-compute/opt/spack/20180914/linux-rhel7-ppc64le/pgi-19.10/fftw-3.3.8-gqrexgid7mduda67hpu42vyxdot3losa
-
-  rdma-core:
-    paths:
-      rdma-core: /usr
-
   cuda:
     modules:
       cuda: cuda/10.1.243
 
   kokkos-cmake:
-    version: [develop]
-    variants: '+aggressive_vectorization +disable_dualview_modify_check cxxstd=11 host_arch=Power9 +librt +openmp +serial'
-    #paths:
-    #  'kokkos-cmake % pgi@19.10 +cuda +enable_lambda gpu_arch=Volta70': /ccs/home/esuchyta/spack/view/kokkos-cmake-gpu-pgi
+    version: [3.1.00]
+    variants: 'host_arch=Power9'
 
   cabana:
-    version: [develop]
-    variants: '+mpi +openmp +serial'
-    paths:
-      'cabana % gcc@9.1.0 +cuda': /ccs/home/esuchyta/spack/view/cabana-gpu
-      #'cabana % pgi@19.10 +cuda': /ccs/home/esuchyta/spack/view/cabana-gpu-pgi
+    version: [0.3.0]
 
   python:
     version: [3.7.4, 2.7.16]
+    paths:
+      'python@2.7.16 % pgi': /autofs/nccs-svm1_home1/esuchyta/spack/spack/opt/spack/linux-rhel7-power9le/gcc-9.1.0/python-2.7.16-bqqlfnelruanidoddemlhrmpggapsxpk
 
   py-numpy:
     version: [1.16.5]
@@ -62,14 +39,14 @@ packages:
     paths:
       'libfabric % pgi': /ccs/home/esuchyta/spack/view/libfabric
 
-  #zeromq:
-  #  paths:
-  #    'zeromq % xl@16.1.1-3': /autofs/nccs-svm1_sw/summit/.swci/1-compute/opt/spack/20180914/linux-rhel7-ppc64le/xl-16.1.1-3/zeromq-4.2.5-ieaqpm563xoiheud72rc4vecqoljux6j
+  rdma-core:
+    paths:
+      rdma-core: /usr
 
   adios2:
     version: [2.5.0, develop]
-    variants: '+python +mpi +sst +ssc +dataman +sz build_type=Release'
-    #variants: '+mpi +sst -ssc -dataman -sz build_type=Release'
+    #variants: '+python +mpi +sst +ssc +dataman +sz build_type=Release'
+    variants: '+mpi +sst -ssc -dataman -sz build_type=Release'
     #paths:
       #'adios2 %pgi@19.4': /ccs/home/esuchyta/spack/view/adios2-nopython
       #  'adios2 %pgi@19.4': /ccs/home/shku/Software/install/summit/adios2/devel/pgi19.4
@@ -81,8 +58,6 @@ packages:
     version: [develop]
     variants: '+mpi +python-prefix -touch -fine-time'
 
-
-
   petsc:
     version: [3.11.4]
 
@@ -93,6 +68,23 @@ packages:
   pspline:
     paths:
       'pspline %pgi': /ccs/home/shku/Software/install/summit/pspline/pgi19.4
+
+  spectrum-mpi: 
+    version: [summit]
+    paths:
+      'spectrum-mpi@summit %gcc@9.1.0': /autofs/nccs-svm1_sw/summit/.swci/1-compute/opt/spack/20180914/linux-rhel7-ppc64le/gcc-9.1.0/spectrum-mpi-10.3.0.1-20190611-2juhkwlddpdydl2yasmuia2slpev6fl5
+      'spectrum-mpi@summit %gcc@8.1.1': /autofs/nccs-svm1_sw/summit/.swci/1-compute/opt/spack/20180914/linux-rhel7-ppc64le/gcc-8.1.1/spectrum-mpi-10.3.1.2-20200121-chae23sgwacfeot7vxkpfboz6wao2c33
+      'spectrum-mpi@summit %gcc@7.4.0': /autofs/nccs-svm1_sw/summit/.swci/1-compute/opt/spack/20180914/linux-rhel7-ppc64le/gcc-7.4.0/spectrum-mpi-10.3.0.1-20190611-mto4jwjeylfm6xdlb5yhaphpgnyzcvh7
+      'spectrum-mpi@summit %pgi@19.10': /autofs/nccs-svm1_sw/summit/.swci/1-compute/opt/spack/20180914/linux-rhel7-ppc64le/pgi-19.10/spectrum-mpi-10.3.0.1-20190611-nmslyxjlrtuclxiuehkgtdmmvrb5r4lk
+      'spectrum-mpi@summit %pgi@19.9':  /autofs/nccs-svm1_sw/summit/.swci/1-compute/opt/spack/20180914/linux-rhel7-ppc64le/pgi-19.9/spectrum-mpi-10.3.1.2-20200121-zy6l7p3w4q2ns7i2zutzng7ex3drw656
+
+  fftw:
+    paths:
+      'fftw %gcc@9.1.0': /autofs/nccs-svm1_sw/summit/.swci/1-compute/opt/spack/20180914/linux-rhel7-ppc64le/gcc-6.4.0/fftw-3.3.8-fr4h5sbpztnrzxxtbrkpuicqmksqs2wl
+      'fftw %gcc@8.1.1': /autofs/nccs-svm1_sw/summit/.swci/1-compute/opt/spack/20180914/linux-rhel7-ppc64le/gcc-8.1.1/fftw-3.3.8-in2y7enjd3memwrmamnoxvsmx37mse7
+      'fftw %gcc@7.4.0': /autofs/nccs-svm1_sw/summit/.swci/1-compute/opt/spack/20180914/linux-rhel7-ppc64le/gcc-6.4.0/fftw-3.3.8-fr4h5sbpztnrzxxtbrkpuicqmksqs2wl
+      'fftw %pgi@19.10': /autofs/nccs-svm1_sw/summit/.swci/1-compute/opt/spack/20180914/linux-rhel7-ppc64le/pgi-19.10/fftw-3.3.8-gqrexgid7mduda67hpu42vyxdot3losa
+      'fftw %pgi@19.9':  /autofs/nccs-svm1_sw/summit/.swci/1-compute/opt/spack/20180914/linux-rhel7-ppc64le/pgi-19.9/fftw-3.3.8-wri566ow7qlimailhyznou5cfm4h362z
 
   pkgconf:
     modules:
@@ -137,3 +129,11 @@ packages:
   c-blosc:
     paths:
       'c-blosc %pgi': /ccs/home/esuchyta/spack/view/c-blosc-1.17.0
+
+  libbsd:
+    paths:
+      'libbsd % pgi': /autofs/nccs-svm1_home1/esuchyta/spack/spack/opt/spack/linux-rhel7-power9le/gcc-9.1.0/libbsd-0.9.1-kmm2w3vcxidaihxczw6gx2dfgrhcx4ad
+
+  #zeromq:
+  #  paths:
+  #    'zeromq % pgi': /autofs/nccs-svm1_home1/esuchyta/spack/spack/opt/spack/linux-rhel7-power9le/gcc-9.1.0/zeromq-4.3.2-qgxffr3hkaruho5j3vof5z46bg2czg4e
