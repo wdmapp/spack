@@ -48,14 +48,14 @@ class XgcDevel(MakefilePackage):
     conflicts('effis@kittie')
 
     depends_on('kokkos-cmake@3.1.00 +serial +aggressive_vectorization cxxstd=11')
-    depends_on('cabana@develop +mpi')
+    depends_on('cabana +mpi')
     depends_on('kokkos-cmake@3.1.00 +openmp', when="+openmp")
-    depends_on('cabana@develop +openmp', when="+openmp")
+    depends_on('cabana +openmp', when="+openmp")
 
     for value in cuda_values:
         when = "cuda={0}".format(value)
         depends_on('kokkos-cmake@3.1.00 +cuda +enable_lambda gpu_arch={0}'.format(value), when=when)
-        depends_on('cabana@develop +cuda', when=when)
+        depends_on('cabana +cuda', when=when)
         depends_on('cuda', when=when)
 
     for value in cpu_values:
@@ -110,6 +110,8 @@ class XgcDevel(MakefilePackage):
             
         if not spec.satisfies("cuda=none"):
             env['NVCC_WRAPPER_DEFAULT_COMPILER'] = self.compiler.cxx
+            #env['NVCC_WRAPPER_DEFAULT_COMPILER'] = spec['mpi'].mpicxx
+            #env['NVCC_WRAPPER_DEFAULT_COMPILER'] = 'g++'
             cxx = which("nvcc_wrapper").path
         else:
             cxx = spec['mpi'].mpicxx
@@ -160,15 +162,19 @@ class XgcDevel(MakefilePackage):
 
         self.Append("CABANA_INC = -I{0} -I{1}".format(spec['cabana'].prefix.include, spec['kokkos-cmake'].prefix.include))
         cab = "-lkokkoscore"
+        #cab = "-L{0}/lib64 -L{1}/lib64 -lkokkoscore".format(spec['cabana'].prefix, spec['kokkos-cmake'].prefix)
         if not spec.satisfies("cuda=none"):
             cab = "-L{0}/lib64 {1}".format(spec['cuda'].prefix, cab)
             cab = "{0} -lcuda -lcudart".format(cab)
+        if spec.satisfies("%pgi"):
+            cab = "{0} -pgc++libs -lstdc++".format(cab)
         self.Append("CABANA_LIB = {0}".format(cab))
         #self.Append("CABANA_LIB = {0} -lhwloc".format(cab))
 
         extra = ""
         if spec.satisfies("+openmp"):
             extra = "{0} {1}".format(extra, openmp)
+            #extra = "{0} -fopenmp".format(extra)
         elif spec.satisfies("cuda=none"):
             filter_file('-DUSE_CAB_OMP=1', '-DUSE_CAB_OMP=0', rulefile)
             filter_file('-DUSE_ARRAY_REPLICATION', '-UUSE_ARRAY_REPLICATION', rulefile)
@@ -185,9 +191,9 @@ class XgcDevel(MakefilePackage):
         acc = ""
         if spec.satisfies("+openacc"):
             if spec.satisfies("%gcc"):
-                acc = "{0} -fopenacc".format(acc)
+                acc = "{0} -fopenacc -DUSE_ASYNC".format(acc)
             elif spec.satisfies("%pgi"):
-                acc = "{0} -acc".format(acc)
+                acc = "{0} -acc -DUSE_ASYNC".format(acc)
         self.Append("ACC_FFLAGS = {0}".format(acc))
         self.Append("CAB_LINK_FLAGS = {0}".format(acc))
 
@@ -198,6 +204,7 @@ class XgcDevel(MakefilePackage):
             self.Append('LD_CAB = {0}'.format(spec['mpi'].mpicxx))
         elif spec.satisfies('%pgi'):
             self.Append('LD_CAB = {0}'.format(spec['mpi'].mpifc))
+            #self.Append('LD_CAB = {0}'.format(spec['mpi'].mpicxx))
 
         self.Append('CXX = {0}'.format(cxx))
         
