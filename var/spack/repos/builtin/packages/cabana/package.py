@@ -39,9 +39,11 @@ class Cabana(CMakePackage):
             options += ["-DCabana_ENABLE_MPI=ON"]
 
         if self.spec.satisfies("+cuda"):
-            #env['NVCC_WRAPPER_DEFAULT_COMPILER'] = self.compiler.cxx
             #env['NVCC_WRAPPER_DEFAULT_COMPILER'] = self.spec['mpi'].mpicxx
-            env['NVCC_WRAPPER_DEFAULT_COMPILER'] = 'g++'
+            if self.spec.satisfies('%gcc'):
+                env['NVCC_WRAPPER_DEFAULT_COMPILER'] = self.compiler.cxx
+            elif self.spec.satisfies('%pgi'):
+                env['NVCC_WRAPPER_DEFAULT_COMPILER'] = 'g++'
             options += ['-DCMAKE_CXX_COMPILER={0}'.format(join_path(self.spec['kokkos-cmake'].prefix.bin, 'nvcc_wrapper'))]
             """
             if self.spec.satisfies("+mpi"):

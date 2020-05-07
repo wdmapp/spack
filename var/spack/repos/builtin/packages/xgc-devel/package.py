@@ -47,20 +47,20 @@ class XgcDevel(MakefilePackage):
     depends_on('effis', when="+effis")
     conflicts('effis@kittie')
 
-    depends_on('kokkos-cmake@3.1.00 +serial +aggressive_vectorization cxxstd=11')
+    depends_on('kokkos-cmake +serial +aggressive_vectorization cxxstd=11')
     depends_on('cabana +mpi')
-    depends_on('kokkos-cmake@3.1.00 +openmp', when="+openmp")
+    depends_on('kokkos-cmake +openmp', when="+openmp")
     depends_on('cabana +openmp', when="+openmp")
 
     for value in cuda_values:
         when = "cuda={0}".format(value)
-        depends_on('kokkos-cmake@3.1.00 +cuda +enable_lambda gpu_arch={0}'.format(value), when=when)
+        depends_on('kokkos-cmake +cuda +enable_lambda gpu_arch={0}'.format(value), when=when)
         depends_on('cabana +cuda', when=when)
         depends_on('cuda', when=when)
 
     for value in cpu_values:
         when = "host_arch={0}".format(value)
-        depends_on('kokkos-cmake@3.1.00 {0}'.format(when), when=when)
+        depends_on('kokkos-cmake {0}'.format(when), when=when)
 
     
     def AddDebugOpt(self, flags, opt):
@@ -109,9 +109,12 @@ class XgcDevel(MakefilePackage):
             effis_lib = "-lkittie_f"
             
         if not spec.satisfies("cuda=none"):
-            env['NVCC_WRAPPER_DEFAULT_COMPILER'] = self.compiler.cxx
             #env['NVCC_WRAPPER_DEFAULT_COMPILER'] = spec['mpi'].mpicxx
-            #env['NVCC_WRAPPER_DEFAULT_COMPILER'] = 'g++'
+            if self.spec.satisfies('%gcc'):
+                env['NVCC_WRAPPER_DEFAULT_COMPILER'] = self.compiler.cxx
+            elif self.spec.satisfies('%pgi'):
+                #env['NVCC_WRAPPER_DEFAULT_COMPILER'] = 'g++'
+                env['NVCC_WRAPPER_DEFAULT_COMPILER'] = self.compiler.cxx
             cxx = which("nvcc_wrapper").path
         else:
             cxx = spec['mpi'].mpicxx
@@ -194,6 +197,8 @@ class XgcDevel(MakefilePackage):
                 acc = "{0} -fopenacc -DUSE_ASYNC".format(acc)
             elif spec.satisfies("%pgi"):
                 acc = "{0} -acc -DUSE_ASYNC".format(acc)
+                if not spec.satisfies("cuda=none"):
+                    acc = "{0} -ta=tesla:cc{1},ptxinfo,maxrregcount:128 -Mnostack_arrays".format(acc, spec.variants['cuda'].value[-2:])
         self.Append("ACC_FFLAGS = {0}".format(acc))
         self.Append("CAB_LINK_FLAGS = {0}".format(acc))
 
