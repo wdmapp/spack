@@ -18,6 +18,7 @@ class KokkosCmake(CMakePackage):
 
     version('develop', branch='develop')
     version('master', branch='master')
+    version('3.1.00', sha256='b935c9b780e7330bcb80809992caa2b66fd387e3a1c261c955d622dae857d878')
     version('2.9.00', sha256='e0621197791ed3a381b4f02c78fa529f3cff3abb74d52157b4add17e8aa04bc4')
     version('2.8.00', sha256='1c72661f2d770517bff98837001b42b9c677d1df29f7493a1d7c008549aff630')
     version('2.7.24', sha256='a308a80ea1488f4c18884b828ce7ae9f5210b9a6b2f61b208d875084d8da8cb0')
@@ -76,7 +77,7 @@ class KokkosCmake(CMakePackage):
     gpu_values = ('Kepler30', 'Kepler32', 'Kepler35', 'Kepler37',
                   'Maxwell50', 'Maxwell52', 'Maxwell53',
                   'Pascal60', 'Pascal61',
-                  'Volta70', 'Volta72')
+                  'Volta70', 'Volta72', 'Turing75')
 
     # C++ standard variant
     variant('cxxstd', default='none',
@@ -132,6 +133,7 @@ class KokkosCmake(CMakePackage):
     # the revision of kokkos does not support
     conflicts('gpu_arch=Volta70', when='@:2.5.99')
     conflicts('gpu_arch=Volta72', when='@:2.5.99')
+    conflicts('gpu_arch=Turing75', when='@:2.5.99')
 
     # conflicts on kokkos version and cuda enabled
     # see kokkos issue #1296
@@ -150,29 +152,22 @@ class KokkosCmake(CMakePackage):
     parallel = False
 
 
-    def setup_environment(self, spack_env, run_env):
-        if self.spec.satisfies('+cuda'):
-            #spack_env.set('NVCC_WRAPPER_DEFAULT_COMPILER', self.compiler.cxx)
-            #spack_env.set('CXXFLAGS', '-std=c++11')
-            spack_env.set('NVCC_WRAPPER_DEFAULT_COMPILER', 'g++')
-
-
     def cmake_args(self):
-        #filter_file('SET\(COMPILER \${KOKKOS_CXX_COMPILER_ID}\)', 'SET(COMPILER ${KOKKOS_CXX_COMPILER_ID})\nMESSAGE(STATUS "COMPILER: ${KOKKOS_CXX_COMPILER_ID}")', 'cmake/kokkos_functions.cmake')
+        """
+        if self.spec.satisfies("%pgi"):
+            filter_file('-Xcompiler -fopenmp', '-Xcompiler -mp', join_path(self.stage.source_path, 'cmake', 'kokkos_enable_devices.cmake'))
+            filter_file('--', '-std=', join_path(self.stage.source_path, 'cmake', 'pgi.cmake'))
+        """
 
         if self.spec.satisfies('+cuda'):
+            #env['NVCC_WRAPPER_DEFAULT_COMPILER'] = self.spec['mpi'].mpicxx
+            if self.spec.satisfies('%gcc'):
+                env['NVCC_WRAPPER_DEFAULT_COMPILER'] = self.compiler.cxx
+            elif self.spec.satisfies('%pgi'):
+                env['NVCC_WRAPPER_DEFAULT_COMPILER'] = 'g++'
             args = ['-DCMAKE_CXX_COMPILER={0}'.format(join_path(self.stage.source_path, 'bin', 'nvcc_wrapper'))]
         else:
-            args = ['-DCMAKE_CXX_COMPILER={0}'.format(self.compiler.cxx)]
-
-        """
-        if self.spec.satisfies('%pgi'):
-            #mkdirp(self.build_directory)
-            #shutil.copy(join_path(os.path.dirname(self.compiler.cxx), 'localrc'), self.build_directory)
-            filter_file('NVIDIA     -Xcompiler -fopenmp', 'NVIDIA     -Xcompiler -mp', 'cmake/kokkos_enable_devices.cmake')
-            #filter_file('NVIDIA     -Xcompiler -fopenmp', 'NVIDIA     -Xcompiler -mp', 'cmake/kokkos_arch.cmake')
-            #args += ['-DCMAKE_CXX_FLAGS=-std=c++11']
-        """
+            args = ['-DCMAKE_CXX_COMPILER={0}'.format(env['CXX'])]
 
         if self.spec.variants['gpu_arch'].value != 'none':
             args += ['-DKokkos_ARCH_{0}=ON'.format(self.spec.variants['gpu_arch'].value.upper())]
