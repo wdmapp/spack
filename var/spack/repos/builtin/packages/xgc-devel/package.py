@@ -19,10 +19,10 @@ class XgcDevel(MakefilePackage):
     variant('openacc', default=False, description="Build with OpenACC")
     variant('debug', default=False, description="Use debug symbols")
 
-    cuda_values = ["Volta70", "Turing75"]
+    cuda_values = ["Volta70", "Turing75", "Kepler30"]
     variant('cuda', default="none", values=cuda_values, description="Build Cuda")
 
-    cpu_values = ["SKX", "Power9"]
+    cpu_values = ["SKX", "Power9", "SNB"]
     variant('host_arch', default="none", values=cpu_values, description="CPU optimization")
 
     xgc_options = ["convert_grid2", "deltaf_mode2", "init_gene_pert", 'col_f_positivity_opt', 'build_testing', 'neoclassical_test', "fusion_io"]
