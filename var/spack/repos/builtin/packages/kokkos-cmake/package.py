@@ -160,8 +160,11 @@ class KokkosCmake(CMakePackage):
         """
 
         if self.spec.satisfies('+cuda'):
-            #env['NVCC_WRAPPER_DEFAULT_COMPILER'] = self.compiler.cxx
-            env['NVCC_WRAPPER_DEFAULT_COMPILER'] = 'g++'
+            #env['NVCC_WRAPPER_DEFAULT_COMPILER'] = self.spec['mpi'].mpicxx
+            if self.spec.satisfies('%gcc'):
+                env['NVCC_WRAPPER_DEFAULT_COMPILER'] = self.compiler.cxx
+            elif self.spec.satisfies('%pgi'):
+                env['NVCC_WRAPPER_DEFAULT_COMPILER'] = 'g++'
             args = ['-DCMAKE_CXX_COMPILER={0}'.format(join_path(self.stage.source_path, 'bin', 'nvcc_wrapper'))]
         else:
             args = ['-DCMAKE_CXX_COMPILER={0}'.format(env['CXX'])]
