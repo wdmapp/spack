@@ -1,4 +1,5 @@
 packages:
+  
   all:
     compiler: [gcc@8.4.0]
     providers:
@@ -12,6 +13,16 @@ packages:
     buildable: false
     paths:
       'openmpi@3.1.4 %gcc@8.4.0': /autofs/nccs-svm1_sw/rhea/.swci/0-core/opt/spack/20191017/linux-rhel7-x86_64/gcc-8.4.0/openmpi-3.1.4-bmn7or3eq2xi2sol4f7yvlpnwniut7yd
+  
+  #cuda:
+  #  modules:
+  #    cuda: cuda/10.0.130
+
+  kokkos-cmake:
+    version: [3.1.00]
+    
+  cabana:
+    version: [0.3.0]
 
   # Newer versions require python3, but old PETSc requires python2
   py-numpy:
