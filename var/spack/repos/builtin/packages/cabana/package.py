@@ -15,6 +15,7 @@ class Cabana(CMakePackage):
 
     version('develop', branch='master')
     version('0.3.0', sha256='fb67ab9aaf254b103ae0eb5cc913ddae3bf3cd0cf6010e9686e577a2981ca84f')
+    version('0.2.0', sha256='3e0c0e224e90f4997f6c7e2b92f00ffa18f8bcff72f789e0908cea0828afc2cb')
     version('0.1.0', sha256='3280712facf6932b9d1aff375b24c932abb9f60a8addb0c0a1950afd0cb9b9cf')
     version('0.1.0-rc0', sha256='73754d38aaa0c2a1e012be6959787108fec142294774c23f70292f59c1bdc6c5')
 
@@ -24,6 +25,7 @@ class Cabana(CMakePackage):
 
     depends_on("mpi", when="+mpi")
     depends_on("cmake@3.9:", type='build')
+    depends_on("cuda", when="+cuda")
 
     depends_on("kokkos-cmake +serial +aggressive_vectorization cxxstd=11")
     depends_on("kokkos-cmake +openmp", when="+openmp")
@@ -42,6 +44,7 @@ class Cabana(CMakePackage):
             #env['NVCC_WRAPPER_DEFAULT_COMPILER'] = self.spec['mpi'].mpicxx
             if self.spec.satisfies('%gcc'):
                 env['NVCC_WRAPPER_DEFAULT_COMPILER'] = self.compiler.cxx
+                #env['CXX'] = self.compiler.cxx
             elif self.spec.satisfies('%pgi'):
                 env['NVCC_WRAPPER_DEFAULT_COMPILER'] = 'g++'
             options += ['-DCMAKE_CXX_COMPILER={0}'.format(join_path(self.spec['kokkos-cmake'].prefix.bin, 'nvcc_wrapper'))]
