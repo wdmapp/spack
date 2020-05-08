@@ -12,11 +12,15 @@ packages:
       cuda: cuda/10.1.243
 
   kokkos-cmake:
-    version: [3.1.00]
+    version: [2.9.00]
+    variants: 'host_arch=Power9'
+
+  kokkos:
+    version: [2.9.00]
     variants: 'host_arch=Power9'
 
   cabana:
-    version: [0.3.0]
+    version: [suchyta]
 
   python:
     version: [3.7.4, 2.7.16]
