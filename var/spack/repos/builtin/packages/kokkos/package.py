@@ -70,7 +70,7 @@ class Kokkos(Package):
     gpu_values = ('Kepler30', 'Kepler32', 'Kepler35', 'Kepler37',
                   'Maxwell50', 'Maxwell52', 'Maxwell53',
                   'Pascal60', 'Pascal61',
-                  'Volta70', 'Volta72')
+                  'Volta70', 'Volta72', 'Turing75')
 
     # C++ standard variant
     variant('cxxstd', default='none',

@@ -47,20 +47,24 @@ class XgcDevel(MakefilePackage):
     depends_on('effis', when="+effis")
     conflicts('effis@kittie')
 
-    depends_on('kokkos-cmake +serial +aggressive_vectorization cxxstd=11')
+    kokkos = "kokkos"
+    if kokkos == "kokkos-cmake":
+        depends_on('{0} +serial +aggressive_vectorization cxxstd=11'.format(kokkos))
+    else:
+        depends_on('{0} +serial +aggressive_vectorization cxxstd=c++11'.format(kokkos))
     depends_on('cabana +mpi')
-    depends_on('kokkos-cmake +openmp', when="+openmp")
+    depends_on('{0} +openmp'.format(kokkos), when="+openmp")
     depends_on('cabana +openmp', when="+openmp")
 
     for value in cuda_values:
         when = "cuda={0}".format(value)
-        depends_on('kokkos-cmake +cuda +enable_lambda gpu_arch={0}'.format(value), when=when)
+        depends_on('{0} +cuda +enable_lambda gpu_arch={1}'.format(kokkos, value), when=when)
         depends_on('cabana +cuda', when=when)
         depends_on('cuda', when=when)
 
     for value in cpu_values:
         when = "host_arch={0}".format(value)
-        depends_on('kokkos-cmake {0}'.format(when), when=when)
+        depends_on('{0} {1}'.format(kokkos, when), when=when)
 
     
     def AddDebugOpt(self, flags, opt):
@@ -163,9 +167,11 @@ class XgcDevel(MakefilePackage):
             self.Append("FUSION_IO_INC = -I{0}".format(spec['fusion-io'].prefix.include))
             self.Append("FUSION_IO_LIB = -lfusionio -lm3dc1 -lm3dc1_fortran -lstdc++")
 
-        self.Append("CABANA_INC = -I{0} -I{1}".format(spec['cabana'].prefix.include, spec['kokkos-cmake'].prefix.include))
-        cab = "-lkokkoscore"
-        #cab = "-L{0}/lib64 -L{1}/lib64 -lkokkoscore".format(spec['cabana'].prefix, spec['kokkos-cmake'].prefix)
+        self.Append("CABANA_INC = -I{0} -I{1}".format(spec['cabana'].prefix.include, spec[self.kokkos].prefix.include))
+        if spec.satisfies("^{0}@:2.9.99".format(self.kokkos)):
+            cab = "-lkokkos"
+        else:
+            cab = "-lkokkoscore"
         if not spec.satisfies("cuda=none"):
             cab = "-L{0}/lib64 {1}".format(spec['cuda'].prefix, cab)
             cab = "{0} -lcuda -lcudart".format(cab)
@@ -174,45 +180,51 @@ class XgcDevel(MakefilePackage):
         self.Append("CABANA_LIB = {0}".format(cab))
         #self.Append("CABANA_LIB = {0} -lhwloc".format(cab))
 
-        extra = ""
+
+        cxx_flags = ""
+        acc = ""
+        cab = ""
+
         if spec.satisfies("+openmp"):
-            extra = "{0} {1}".format(extra, openmp)
-            #extra = "{0} -fopenmp".format(extra)
+            cxx_flags = "{0} {1}".format(cxx_flags, openmp)
         elif spec.satisfies("cuda=none"):
             filter_file('-DUSE_CAB_OMP=1', '-DUSE_CAB_OMP=0', rulefile)
             filter_file('-DUSE_ARRAY_REPLICATION', '-UUSE_ARRAY_REPLICATION', rulefile)
-            
         if not spec.satisfies("cuda=none"):
-            self.Append("CUDA_REG_COUNT = 128")
-            extra = "{0} --expt-extended-lambda".format(extra)
+            cxx_flags = "{0} --expt-extended-lambda -arch=sm_{1}".format(cxx_flags, spec.variants['cuda'].value[-2:])
+            if spec.satisfies("%pgi"):
+                acc = "{0} -Minfo=accel".format(acc)
+                #cab = "{0} -Minfo=accel -Mcuda=cuda10.1,cc{1}".format(acc, spec.variants['cuda'].value[-2:])
+                cab = "{0} -Minfo=accel".format(acc)
+        cxx_flags = self.AddDebugOpt(cxx_flags, opt)
             
-        extra = self.AddDebugOpt(extra, opt)
-            
-        self.Append("CAB_CXX_FLAGS = -pedantic -std=c++11 {0}".format(extra))
-        self.Append("CAB_FTN_FLAGS = ")
-      
-        acc = ""
         if spec.satisfies("+openacc"):
             if spec.satisfies("%gcc"):
                 acc = "{0} -fopenacc -DUSE_ASYNC".format(acc)
+                cab = "{0} -fopenacc".format(cab)
             elif spec.satisfies("%pgi"):
-                acc = "{0} -acc -DUSE_ASYNC".format(acc)
+                #acc = "{0} -acc -Mnostack_arrays -DUSE_ASYNC".format(acc)
+                acc = "{0} -acc".format(acc)
+                cab = "{0} -acc".format(cab)
                 if not spec.satisfies("cuda=none"):
-                    acc = "{0} -ta=tesla:cc{1},ptxinfo,maxrregcount:128 -Mnostack_arrays".format(acc, spec.variants['cuda'].value[-2:])
+                    acc = "{0} -ta=tesla:cc{1},ptxinfo,maxrregcount:128".format(acc, spec.variants['cuda'].value[-2:])
+                    cab = "{0} -ta=tesla:cc{1}".format(acc, spec.variants['cuda'].value[-2:])
+
+        self.Append("CAB_CXX_FLAGS = -pedantic -std=c++11 {0}".format(cxx_flags))
+        self.Append("CAB_FTN_FLAGS = {0}".format(cab))
         self.Append("ACC_FFLAGS = {0}".format(acc))
-        self.Append("CAB_LINK_FLAGS = {0}".format(acc))
+        self.Append("CAB_LINK_FLAGS = {1} {0}".format(acc, cab))
+
 
         self.Append('FC = {0}'.format(spec['mpi'].mpifc))
         self.Append('CC = {0}'.format(spec['mpi'].mpicc))
         self.Append('LD = {0}'.format(spec['mpi'].mpifc))
+        self.Append('CXX = {0}'.format(cxx))
         if spec.satisfies('%gcc'):
             self.Append('LD_CAB = {0}'.format(spec['mpi'].mpicxx))
         elif spec.satisfies('%pgi'):
             self.Append('LD_CAB = {0}'.format(spec['mpi'].mpifc))
-            #self.Append('LD_CAB = {0}'.format(spec['mpi'].mpicxx))
 
-        self.Append('CXX = {0}'.format(cxx))
-        
         self.makestream.close()
 
 
