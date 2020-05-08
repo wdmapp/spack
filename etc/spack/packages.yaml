@@ -1,18 +1,15 @@
 packages:
   all:
-    compiler:
-      - gcc@7.4.0
-      - pgi@19.10
     providers:
       blas: [netlib-lapack]
       lapack: [netlib-lapack]
       mpi: [mpich]
       scalapack: [netlib-scalapack]
 
-  mpich: 
-    version: [3.3]
-    paths:
-      'mpich@3.3 %gcc@7.4.0': /usr
+  #mpich:
+  #  version: [3.3]
+  #  paths:
+  #    mpich %gcc @7.4.0: /usr
 
   cuda:
     paths:
@@ -35,13 +32,9 @@ packages:
 
   kokkos-cmake:
     version: [3.1.00]
-    #paths:
-    #  'kokkos-cmake +serial +aggressive_vectorization cxxstd=11 +openmp +cuda +enable_lambda gpu_arch=Turing75 % pgi': /home/eqs/spack/opt/spack/linux-ubuntu18.04-skylake_avx512/gcc-7.4.0/kokkos-cmake-3.1.00-wkcjjgck4uhxpoh2xe6ju4l4vpzglbxh
   
   cabana:
     version: [0.3.0]
-    #paths:
-    #  'cabana +mpi +openmp +cuda % pgi': /home/eqs/spack/opt/spack/linux-ubuntu18.04-skylake_avx512/gcc-7.4.0/cabana-develop-hideyyr6hexxpayzeruz7i2rx3ilfwi6
 
   texlive:
     paths:
@@ -57,6 +50,10 @@ packages:
 
 
   ### These don't build correctly with PGI ###
+  binutils:
+    paths:
+      'binutils %pgi +headers +libiberty -nls': /home/eqs/spack/opt/spack/linux-ubuntu18.04-skylake_avx512/gcc-7.4.0/binutils-2.32-xumgw4sqttynyw3n7dnpmr4ggagkfe3b
+
   c-blosc:
     paths:
       'c-blosc % pgi': /usr
