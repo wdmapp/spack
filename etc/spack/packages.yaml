@@ -1,6 +1,6 @@
 packages:
   all:
-    compiler: [gcc@9.1.0, pgi@19.4]
+    compiler: [gcc@9.1.0, pgi@19.9]
     providers:
       blas: [netlib-lapack]
       lapack: [netlib-lapack]
@@ -14,13 +14,19 @@ packages:
   kokkos-cmake:
     version: [2.9.00]
     variants: 'host_arch=Power9'
-
+      
   kokkos:
     version: [2.9.00]
     variants: 'host_arch=Power9'
+    #paths:
+    #  #"kokkos@2.9.00%pgi@19.9 +aggressive_vectorization~compiler_warnings+cuda cxxstd=c++11 ~debug~disable_deprecated_code~disable_dualview_modify_check~disable_profiling~enable_eti+enable_lambda~enable_profile_load_print~force_uvm gpu_arch=Volta70 host_arch=Power9 +openmp~pic~pthreads~qthreads~rdc+serial~use_ldg": /ccs/home/scheinberg/Software/Jan20/kokkos/cmake_install/
+    #  "kokkos@2.9.00%pgi@19.9 +aggressive_vectorization~compiler_warnings+cuda cxxstd=c++11 ~debug~disable_deprecated_code~disable_dualview_modify_check~disable_profiling~enable_eti+enable_lambda~enable_profile_load_print~force_uvm gpu_arch=Volta70 host_arch=Power9 +openmp~pic~pthreads~qthreads~rdc+serial~use_ldg": /ccs/home/scheinberg/Software/Jan20/kokkos/cmake_install/lib/CMake/Kokkos/
 
   cabana:
     version: [suchyta]
+    #paths:
+    #  "cabana@suchyta%pgi@19.9 build_type=RelWithDebInfo +cuda+mpi+openmp": /ccs/home/scheinberg/Software/Jan20/Cabana/install/
+
 
   python:
     version: [3.7.4, 2.7.16]
@@ -61,9 +67,6 @@ packages:
   kittie:
     version: [develop]
     variants: '+mpi +python-prefix -touch -fine-time'
-
-  petsc:
-    version: [3.11.4]
 
   camtimers:
     paths:
