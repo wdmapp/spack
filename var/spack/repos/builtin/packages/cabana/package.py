@@ -33,14 +33,18 @@ class Cabana(CMakePackage):
         depends_on("{0} +serial +aggressive_vectorization cxxstd=11".format(kokkos))
     else:
         depends_on("{0} +serial +aggressive_vectorization cxxstd=c++11".format(kokkos))
+        settings = ""
     depends_on("{0} +openmp".format(kokkos), when="+openmp")
     depends_on("{0} +cuda".format(kokkos), when="+cuda")
 
 
     def cmake_args(self):
+        env['PC_KOKKOS_PREFIX'] = join_path(self.spec[self.kokkos].prefix, self.settings)
         options = [
-            '-DCabana_ENABLE_TESTING=ON',
+            '-DCabana_ENABLE_TESTING=OFF',
             '-DCMAKE_POLICY_DEFAULT_CMP0074=NEW'
+             #"-DKOKKOS_SETTINGS_DIR={0}".format(join_path(self.spec[self.kokkos].prefix, self.settings)),
+             #"-DKOKKOS_INCLUDE_DIR={0}".format(self.spec[self.kokkos].prefix.include)
             ]
         if self.spec.satisfies('+mpi'):
             options += ["-DCabana_ENABLE_MPI=ON"]
@@ -56,8 +60,10 @@ class Cabana(CMakePackage):
             if self.spec.satisfies('%gcc'):
                 env['NVCC_WRAPPER_DEFAULT_COMPILER'] = self.compiler.cxx
             elif self.spec.satisfies('%pgi'):
-                env['NVCC_WRAPPER_DEFAULT_COMPILER'] = 'g++'
+                #env['NVCC_WRAPPER_DEFAULT_COMPILER'] = 'g++'
+                env['NVCC_WRAPPER_DEFAULT_COMPILER'] = self.compiler.cxx
             options += ['-DCMAKE_CXX_COMPILER={0}'.format(join_path(self.spec[self.kokkos].prefix.bin, 'nvcc_wrapper'))]
+            #options += ['-DCMAKE_CXX_COMPILER={0}'.format(join_path(self.spec[self.kokkos].prefix, '../', 'bin', 'nvcc_wrapper'))]
             """
             if self.spec.satisfies("+mpi"):
                 options += ['-DMPI_CXX_COMPILER={0}'.format(self.spec['mpi'].mpicxx)]
