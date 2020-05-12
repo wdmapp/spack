@@ -12,6 +12,7 @@ class XgcDevel(MakefilePackage):
     url = "https://bitbucket.org/madams/epsi/overview"
 
     version('master',  git='https://github.com/PrincetonUniversity/XGC-Devel.git', branch='master', preferred=True)
+    version('commit',  git='https://github.com/PrincetonUniversity/XGC-Devel.git', commit='63eb658c87bab810ff70e6e95add85a4ab61a94b', preferred=False)
     version('effis',  git='https://github.com/suchyta1/XGC-Devel.git', branch='effis-more')
 
     variant('effis', default=False, description='EFFIS support')
@@ -79,16 +80,6 @@ class XgcDevel(MakefilePackage):
         self.makestream.write("\n" + line)
 
 
-    """
-    def setup_environment(self, spack_env, run_env):
-        self.platform = "spack"
-        spack_env.set("XGC_PLATFORM", self.platform)
-
-        if not self.spec.satisfies("cuda=none"):
-            spack_env.set('NVCC_WRAPPER_DEFAULT_COMPILER', self.compiler.cxx)
-    """
-
-
     def edit(self, spec, prefix):
         platform = "spack"
         env["XGC_PLATFORM"] = platform
@@ -98,7 +89,8 @@ class XgcDevel(MakefilePackage):
         rulefile = os.path.join("build", "rules.mk")
         corefile = os.path.join("XGC_core", "cpp", "Makefile")
 
-        opts = ["-DITER_GRID", "-DCAM_TIMERS", "-DADIOS2", "-DFFTW3"]
+        #opts = ["-DITER_GRID", "-DCAM_TIMERS", "-DADIOS2", "-DFFTW3"]
+        opts = ["-DCAM_TIMERS", "-DADIOS2", "-DFFTW3"]
         for option in self.xgc_options:
             if spec.satisfies("+{0}".format(option)):
                 opts  += ["-D{0}".format(option.upper())]
@@ -113,13 +105,13 @@ class XgcDevel(MakefilePackage):
             effis_lib = "-lkittie_f"
             
         if not spec.satisfies("cuda=none"):
-            #env['NVCC_WRAPPER_DEFAULT_COMPILER'] = spec['mpi'].mpicxx
+            #env['CUDAROOT'] = spec['cuda'].prefix
             if self.spec.satisfies('%gcc'):
                 env['NVCC_WRAPPER_DEFAULT_COMPILER'] = self.compiler.cxx
             elif self.spec.satisfies('%pgi'):
-                #env['NVCC_WRAPPER_DEFAULT_COMPILER'] = 'g++'
-                env['NVCC_WRAPPER_DEFAULT_COMPILER'] = self.compiler.cxx
-            cxx = which("nvcc_wrapper").path
+                env['NVCC_WRAPPER_DEFAULT_COMPILER'] = spec['mpi'].mpicxx
+            #cxx = which("nvcc_wrapper").path
+            cxx = join_path(self.spec[self.kokkos].prefix, '../', 'bin', 'nvcc_wrapper')
         else:
             cxx = spec['mpi'].mpicxx
 
@@ -165,9 +157,10 @@ class XgcDevel(MakefilePackage):
         
         if spec.satisfies("+fusion_io"):
             self.Append("FUSION_IO_INC = -I{0}".format(spec['fusion-io'].prefix.include))
-            self.Append("FUSION_IO_LIB = -lfusionio -lm3dc1 -lm3dc1_fortran -lstdc++")
+            #self.Append("FUSION_IO_LIB = -lfusionio -lm3dc1 -lm3dc1_fortran -lstdc++")
+            self.Append("FUSION_IO_LIB = -lfusionio -lm3dc1 -lm3dc1_fortran")
 
-        self.Append("CABANA_INC = -I{0} -I{1}".format(spec['cabana'].prefix.include, spec[self.kokkos].prefix.include))
+        self.Append("CABANA_INC = -I{0}/ -I{1}/".format(spec['cabana'].prefix.include, spec[self.kokkos].prefix.include))
         if spec.satisfies("^{0}@:2.9.99".format(self.kokkos)):
             cab = "-lkokkos"
         else:
@@ -176,8 +169,9 @@ class XgcDevel(MakefilePackage):
             cab = "-L{0}/lib64 {1}".format(spec['cuda'].prefix, cab)
             cab = "{0} -lcuda -lcudart".format(cab)
         if spec.satisfies("%pgi"):
-            cab = "{0} -pgc++libs -lstdc++".format(cab)
+            cab = "{0} -pgc++libs".format(cab)
         self.Append("CABANA_LIB = {0}".format(cab))
+        #self.Append("CABANA_LIB = {0} -lstdc++".format(cab))
         #self.Append("CABANA_LIB = {0} -lhwloc".format(cab))
 
 
@@ -187,28 +181,31 @@ class XgcDevel(MakefilePackage):
 
         if spec.satisfies("+openmp"):
             cxx_flags = "{0} {1}".format(cxx_flags, openmp)
+            filter_file('-DUSE_CAB_OMP=0', '-DUSE_CAB_OMP=1', rulefile)
         elif spec.satisfies("cuda=none"):
             filter_file('-DUSE_CAB_OMP=1', '-DUSE_CAB_OMP=0', rulefile)
             filter_file('-DUSE_ARRAY_REPLICATION', '-UUSE_ARRAY_REPLICATION', rulefile)
         if not spec.satisfies("cuda=none"):
             cxx_flags = "{0} --expt-extended-lambda -arch=sm_{1}".format(cxx_flags, spec.variants['cuda'].value[-2:])
             if spec.satisfies("%pgi"):
-                acc = "{0} -Minfo=accel".format(acc)
-                #cab = "{0} -Minfo=accel -Mcuda=cuda10.1,cc{1}".format(acc, spec.variants['cuda'].value[-2:])
-                cab = "{0} -Minfo=accel".format(acc)
+                acc = "{0} -Minfo=accel -Mnostack_arrays -Mcuda=cuda10.1,cc{1}".format(acc, spec.variants['cuda'].value[-2:])
+                cab = "{0} -Minfo=accel -Mnostack_arrays -Mcuda=cuda10.1,cc{1}".format(cab, spec.variants['cuda'].value[-2:])
+                cxx_flags = "{0} -Minfo=accel -Mnostack_arrays".format(cab, spec.variants['cuda'].value[-2:])
         cxx_flags = self.AddDebugOpt(cxx_flags, opt)
             
         if spec.satisfies("+openacc"):
             if spec.satisfies("%gcc"):
-                acc = "{0} -fopenacc -DUSE_ASYNC".format(acc)
+                #acc = "{0} -fopenacc -DUSE_ASYNC".format(acc)
                 cab = "{0} -fopenacc".format(cab)
+                #cxx_flags = "{0} -fopenacc".format(cxxflags)
             elif spec.satisfies("%pgi"):
-                #acc = "{0} -acc -Mnostack_arrays -DUSE_ASYNC".format(acc)
-                acc = "{0} -acc".format(acc)
+                #acc = "{0} -acc".format(acc)
                 cab = "{0} -acc".format(cab)
+                #cxx_flags = "{0} -acc".format(cxx_flags)
                 if not spec.satisfies("cuda=none"):
-                    acc = "{0} -ta=tesla:cc{1},ptxinfo,maxrregcount:128".format(acc, spec.variants['cuda'].value[-2:])
-                    cab = "{0} -ta=tesla:cc{1}".format(acc, spec.variants['cuda'].value[-2:])
+                    #acc = "{0} -ta=nvidia:cc{1},ptxinfo,maxrregcount:128".format(acc, spec.variants['cuda'].value[-2:])
+                    cab = "{0} -ta=nvidia:cc{1}".format(cab, spec.variants['cuda'].value[-2:])
+                    #cxx_flags = "{0} -ta=nvidia:cc{1}".format(cxx_flags, spec.variants['cuda'].value[-2:])
 
         self.Append("CAB_CXX_FLAGS = -pedantic -std=c++11 {0}".format(cxx_flags))
         self.Append("CAB_FTN_FLAGS = {0}".format(cab))
