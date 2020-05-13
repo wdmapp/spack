@@ -43,8 +43,6 @@ class Cabana(CMakePackage):
         options = [
             '-DCabana_ENABLE_TESTING=OFF',
             '-DCMAKE_POLICY_DEFAULT_CMP0074=NEW'
-             #"-DKOKKOS_SETTINGS_DIR={0}".format(join_path(self.spec[self.kokkos].prefix, self.settings)),
-             #"-DKOKKOS_INCLUDE_DIR={0}".format(self.spec[self.kokkos].prefix.include)
             ]
         if self.spec.satisfies('+mpi'):
             options += ["-DCabana_ENABLE_MPI=ON"]
@@ -56,24 +54,15 @@ class Cabana(CMakePackage):
                 options += ["-DCabana_ENABLE_OpenMP=ON"]
 
         if self.spec.satisfies("+cuda"):
-            #env['NVCC_WRAPPER_DEFAULT_COMPILER'] = self.spec['mpi'].mpicxx
-            if self.spec.satisfies('%gcc'):
-                env['NVCC_WRAPPER_DEFAULT_COMPILER'] = self.compiler.cxx
-            elif self.spec.satisfies('%pgi'):
-                #env['NVCC_WRAPPER_DEFAULT_COMPILER'] = 'g++'
-                env['NVCC_WRAPPER_DEFAULT_COMPILER'] = self.compiler.cxx
+            env['NVCC_WRAPPER_DEFAULT_COMPILER'] = self.compiler.cxx
             options += ['-DCMAKE_CXX_COMPILER={0}'.format(join_path(self.spec[self.kokkos].prefix.bin, 'nvcc_wrapper'))]
-            #options += ['-DCMAKE_CXX_COMPILER={0}'.format(join_path(self.spec[self.kokkos].prefix, '../', 'bin', 'nvcc_wrapper'))]
-            """
-            if self.spec.satisfies("+mpi"):
-                options += ['-DMPI_CXX_COMPILER={0}'.format(self.spec['mpi'].mpicxx)]
-            """
         elif self.spec.satisfies("+mpi"):
             options += ['-DCMAKE_CXX_COMPILER={0}'.format(self.spec['mpi'].mpicxx)]
         else:
             options += ['-DCMAKE_CXX_COMPILER={0}'.format(env['CXX'])]
 
-        mkdirp(self.prefix)
-        install(join_path(self.stage.source_path, 'cmake', 'FindKOKKOS.cmake'), self.prefix)
+        if self.spec.satisfies('@suchyta') or self.spec.satisfies('@:0.2.99'):
+            mkdirp(self.prefix)
+            install(join_path(self.stage.source_path, 'cmake', 'FindKOKKOS.cmake'), self.prefix)
 
         return options

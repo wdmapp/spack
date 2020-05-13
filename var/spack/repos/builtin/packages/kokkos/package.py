@@ -144,12 +144,10 @@ class Kokkos(Package):
 
 
     def install(self, spec, prefix):
-        #if spec.satisfies("@3.0.00:") and self.spec.satisfies("+cuda"):
         if self.spec.satisfies("+cuda"):
             env['CXX'] = join_path(self.stage.source_path, 'bin', 'nvcc_wrapper')
+            env['NVCC_WRAPPER_DEFAULT_COMPILER'] = self.compiler.cxx
             if self.spec.satisfies('%pgi'):
-                #env['NVCC_WRAPPER_DEFAULT_COMPILER'] = 'g++'
-                env['NVCC_WRAPPER_DEFAULT_COMPILER'] = self.compiler.cxx
                 filter_file('--c\+\+11', '-std=c++11', join_path(self.stage.source_path, "Makefile.kokkos"))
 
         generate = which(join_path(self.stage.source_path,
