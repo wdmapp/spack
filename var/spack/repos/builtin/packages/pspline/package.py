@@ -33,3 +33,5 @@ class Pspline(MakefilePackage):
         for filename in files:
             if filename.endswith(".mod"):
                 install(filename, self.prefix.mod)
+            if filename.endswith(".h"):
+                install(filename, self.prefix.include)
