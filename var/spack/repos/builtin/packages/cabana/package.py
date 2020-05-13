@@ -61,7 +61,7 @@ class Cabana(CMakePackage):
         else:
             options += ['-DCMAKE_CXX_COMPILER={0}'.format(env['CXX'])]
 
-        if self.spec.satisfies('@:0.2.99'):
+        if self.spec.satisfies('@suchyta') or self.spec.satisfies('@:0.2.99'):
             mkdirp(self.prefix)
             install(join_path(self.stage.source_path, 'cmake', 'FindKOKKOS.cmake'), self.prefix)
 
