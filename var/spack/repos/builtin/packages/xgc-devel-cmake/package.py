@@ -1,9 +1,6 @@
 from spack import *
 import os
-import sys
 import shutil
-import subprocess
-import socket
 
 
 class XgcDevelCmake(CMakePackage):
@@ -73,10 +70,11 @@ class XgcDevelCmake(CMakePackage):
 
         if not self.spec.satisfies("cuda=none"):
             self.binary = 'xgc-es-cpp-gpu'
-            env['NVCC_WRAPPER_DEFAULT_COMPILER'] = self.spec['mpi'].mpicxx
-            #cxx = which("nvcc_wrapper").path
+            #env['NVCC_WRAPPER_DEFAULT_COMPILER'] = self.spec['mpi'].mpicxx
+            env['NVCC_WRAPPER_DEFAULT_COMPILER'] = self.compiler.cxx
+            cxx = which("nvcc_wrapper").path
             #cxx = join_path(self.spec[self.kokkos].prefix, '../', 'bin', 'nvcc_wrapper')
-            cxx = join_path(self.spec[self.kokkos].prefix, '..', '..', '..', '..', 'bin', 'nvcc_wrapper')
+            #cxx = join_path(self.spec[self.kokkos].prefix, '..', '..', '..', '..', 'bin', 'nvcc_wrapper')
         else:
             self.binary = 'xgc-es-cpp'
             cxx = self.spec['mpi'].mpicxx
@@ -107,8 +105,8 @@ class XgcDevelCmake(CMakePackage):
         if self.spec.satisfies("%pgi"):
             link_flags = "-pgc++libs"
             if not self.spec.satisfies("cuda=none"):
-                link_flags = link_flags + " " + "-Mcuda=cuda10.1,cc{0},ptxinfo,maxrregcount:128".format(self.spec.variants['cuda'].value[-2:])
-                gpu_fortran_flags = "-Minfo=accel -Mcuda=cuda10.1,cc{0}".format(self.spec.variants['cuda'].value[-2:])
+                link_flags = link_flags + " " + "-Mcuda=cuda{1},cc{0},ptxinfo,maxrregcount:128".format(self.spec.variants['cuda'].value[-2:], self.spec['cuda'].version.up_to(2))
+                gpu_fortran_flags = "-Minfo=accel -Mcuda=cuda{1},cc{0}".format(self.spec.variants['cuda'].value[-2:], self.spec['cuda'].version.up_to(2))
                 gpu_link_flags = "-Minfo=accel"
                 if self.spec.satisfies("+openacc"):
                     gpu_fortran_flags = gpu_fortran_flags + " " + "-ta=tesla:cc{0}".format(self.spec.variants['cuda'].value[-2:])
@@ -116,18 +114,18 @@ class XgcDevelCmake(CMakePackage):
             elif self.spec.satisfies("+openacc"):
                 gpu_fortran_flags = "acc"
 
-        elif self.spec.satisfies("gcc"):
+        elif self.spec.satisfies("%gcc"):
             link_flags = ""
             if self.spec.satisfies("+openacc"):
                 gpu_fortran_flags = "-fopenacc"
-                gpu_link_flags = "{0} -fopenacc -DUSE_ASYNC)".format(gpu_link__flags)
+                gpu_link_flags = "-fopenacc -DUSE_ASYNC"
             else:
                 gpu_fortran_flags = ""
                 gpu_link_flags = ""
 
         platform = "spack"
         env["XGC_PLATFORM"] = platform
-        self.makefile = os.path.join("CMake", "find_dependencies_{0}.cmake".format(platform))
+        self.makefile = join_path("CMake", "find_dependencies_{0}.cmake".format(platform))
         self.makestream = open(self.makefile, "w")
         self.Append("set(GPU_Fortran_FLAGS {0})".format(gpu_fortran_flags))
         self.Append("set(LINK_FLAGS {0})".format(link_flags))
@@ -137,18 +135,19 @@ class XgcDevelCmake(CMakePackage):
         self.Append("find_package(PETSC REQUIRED)")
         self.makestream.close()
 
-        self.flagfile = os.path.join("build", "xgc_flags.mk")
+        self.flagfile = join_path("build", "xgc_flags.mk")
         filter_file('^\s*(XGC_FLAGS\s*\+=.*)', 'XGC_FLAGS += ', self.flagfile)
 
-        """
-        if self.kokkos == "kokkos-cmake":
-            kokkoslib = "-lkokkoscore"
-        else:
-            kokkoslib = "-lkokkos"
-        kokkosfile = os.path.join("build", "CMake", "FindKokkos.cmake")
-        filter_file('find_package\(Kokkos CONFIG\)', 'find_library(kokkos {0} {1})'.format(kokkoslib[2:], self.spec[self.kokkos].prefix.lib), kokkosfile)
-        filter_file('if\(Kokkos_FOUND\)', 'if(TRUE)', kokkosfile)
-        """
+
+        kfile = join_path(self.stage.source_path, 'CMake', 'FindKokkos.cmake')
+        os.remove(kfile)
+        shutil.copy(join_path(self.spec['cabana'].prefix, 'FindKOKKOS.cmake'), kfile)
+        filter_file("KOKKOS DEFAULT_MSG", "Kokkos DEFAULT_MSG", kfile)
+
+        filter_file('kokkos', 'Kokkos::kokkos', join_path(self.stage.source_path, 'CMake', 'FindCabana.cmake'))
+        filter_file('TARGET kokkos', 'TARGET Kokkos::kokkos', join_path(self.stage.source_path, 'CMakeLists.txt'))
+        filter_file('INTERFACE kokkos', 'INTERFACE Kokkos::kokkos', join_path(self.stage.source_path, 'CMakeLists.txt'))
+        filter_file('PATH_SUFFIXES include', 'PATH_SUFFIXES include mod', join_path(self.stage.source_path, 'CMake', 'FindPSPLINE.cmake'))
 
         return opts
 
