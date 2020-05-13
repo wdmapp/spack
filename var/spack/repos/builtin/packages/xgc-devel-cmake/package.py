@@ -74,8 +74,6 @@ class XgcDevelCmake(CMakePackage):
             #env['NVCC_WRAPPER_DEFAULT_COMPILER'] = self.spec['mpi'].mpicxx
             env['NVCC_WRAPPER_DEFAULT_COMPILER'] = self.compiler.cxx
             cxx = which("nvcc_wrapper").path
-            #cxx = join_path(self.spec[self.kokkos].prefix, '../', 'bin', 'nvcc_wrapper')
-            #cxx = join_path(self.spec[self.kokkos].prefix, '..', '..', '..', '..', 'bin', 'nvcc_wrapper')
         else:
             self.binary = 'xgc-es-cpp'
             cxx = self.spec['mpi'].mpicxx
@@ -115,11 +113,6 @@ class XgcDevelCmake(CMakePackage):
             else:
                 gpu_fortran_flags = ""
                 gpu_link_flags = ""
-            """
-            elif self.spec.satisfies("+openacc"):
-                gpu_fortran_flags = "-acc"
-                gpu_link_flags = ""
-            """
 
         elif self.spec.satisfies("%gcc"):
             link_flags = ""
@@ -148,10 +141,13 @@ class XgcDevelCmake(CMakePackage):
         filter_file('PATH_SUFFIXES include', 'PATH_SUFFIXES include mod', join_path(self.stage.source_path, 'CMake', 'FindPSPLINE.cmake'))
         filter_file('kokkos', 'Kokkos::kokkos', join_path(self.stage.source_path, 'CMake', 'FindCabana.cmake'))
 
-        kfile = join_path(self.stage.source_path, 'CMake', 'FindKokkos.cmake')
-        os.remove(kfile)
-        shutil.copy(join_path(self.spec['cabana'].prefix, 'FindKOKKOS.cmake'), kfile)
-        filter_file("KOKKOS DEFAULT_MSG", "Kokkos DEFAULT_MSG", kfile)
+        if self.spec.satisfies('^cabana @:0.2.99'):
+            kfile = join_path(self.stage.source_path, 'CMake', 'FindKokkos.cmake')
+            os.remove(kfile)
+            shutil.copy(join_path(self.spec['cabana'].prefix, 'FindKOKKOS.cmake'), kfile)
+            filter_file("KOKKOS DEFAULT_MSG", "Kokkos DEFAULT_MSG", kfile)
+        else:
+            filter_file('if\(Kokkos_FOUND\)', 'if(NOT Kokkos_FOUND)', join_path(self.stage.source_path, 'CMake', 'FindKokkos.cmake'))
 
         filter_file('TARGET kokkos', 'TARGET Kokkos::kokkos', join_path(self.stage.source_path, 'CMakeLists.txt'))
         filter_file('INTERFACE kokkos', 'INTERFACE Kokkos::kokkos', join_path(self.stage.source_path, 'CMakeLists.txt'))
