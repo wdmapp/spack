@@ -8,6 +8,7 @@ packages:
       scalapack: [netlib-scalapack]
 
   cuda:
+    version: [10.1.243]
     modules:
       cuda: cuda/10.1.243
 
@@ -18,15 +19,9 @@ packages:
   kokkos:
     version: [2.9.00]
     variants: 'host_arch=Power9'
-    #paths:
-    #  #"kokkos@2.9.00%pgi@19.9 +aggressive_vectorization~compiler_warnings+cuda cxxstd=c++11 ~debug~disable_deprecated_code~disable_dualview_modify_check~disable_profiling~enable_eti+enable_lambda~enable_profile_load_print~force_uvm gpu_arch=Volta70 host_arch=Power9 +openmp~pic~pthreads~qthreads~rdc+serial~use_ldg": /ccs/home/scheinberg/Software/Jan20/kokkos/cmake_install/
-    #  "kokkos@2.9.00%pgi@19.9 +aggressive_vectorization~compiler_warnings+cuda cxxstd=c++11 ~debug~disable_deprecated_code~disable_dualview_modify_check~disable_profiling~enable_eti+enable_lambda~enable_profile_load_print~force_uvm gpu_arch=Volta70 host_arch=Power9 +openmp~pic~pthreads~qthreads~rdc+serial~use_ldg": /ccs/home/scheinberg/Software/Jan20/kokkos/cmake_install/lib/CMake/Kokkos/
 
   cabana:
     version: [suchyta]
-    #paths:
-    #  "cabana@suchyta%pgi@19.9 build_type=RelWithDebInfo +cuda+mpi+openmp": /ccs/home/scheinberg/Software/Jan20/Cabana/install/
-
 
   python:
     version: [3.7.4, 2.7.16]
@@ -79,19 +74,18 @@ packages:
   spectrum-mpi: 
     version: [summit]
     paths:
-      'spectrum-mpi@summit %gcc@9.1.0': /autofs/nccs-svm1_sw/summit/.swci/1-compute/opt/spack/20180914/linux-rhel7-ppc64le/gcc-9.1.0/spectrum-mpi-10.3.0.1-20190611-2juhkwlddpdydl2yasmuia2slpev6fl5
-      'spectrum-mpi@summit %gcc@8.1.1': /autofs/nccs-svm1_sw/summit/.swci/1-compute/opt/spack/20180914/linux-rhel7-ppc64le/gcc-8.1.1/spectrum-mpi-10.3.1.2-20200121-chae23sgwacfeot7vxkpfboz6wao2c33
-      'spectrum-mpi@summit %gcc@7.4.0': /autofs/nccs-svm1_sw/summit/.swci/1-compute/opt/spack/20180914/linux-rhel7-ppc64le/gcc-7.4.0/spectrum-mpi-10.3.0.1-20190611-mto4jwjeylfm6xdlb5yhaphpgnyzcvh7
-      'spectrum-mpi@summit %pgi@19.10': /autofs/nccs-svm1_sw/summit/.swci/1-compute/opt/spack/20180914/linux-rhel7-ppc64le/pgi-19.10/spectrum-mpi-10.3.0.1-20190611-nmslyxjlrtuclxiuehkgtdmmvrb5r4lk
+      'spectrum-mpi@summit %gcc@9.1.0': /autofs/nccs-svm1_sw/summit/.swci/1-compute/opt/spack/20180914/linux-rhel7-ppc64le/gcc-9.1.0/spectrum-mpi-10.3.1.2-20200121-jd4wr7r4th5gtr4qndday6gkbvqziasp
+      'spectrum-mpi@summit %gcc@7.4.0': /autofs/nccs-svm1_sw/summit/.swci/1-compute/opt/spack/20180914/linux-rhel7-ppc64le/gcc-7.4.0/spectrum-mpi-10.3.1.2-20200121-eu2wh5ypz6ipvokwbng2m5ihug6doysh
+      'spectrum-mpi@summit %pgi@19.10': /autofs/nccs-svm1_sw/summit/.swci/1-compute/opt/spack/20180914/linux-rhel7-ppc64le/pgi-19.10/spectrum-mpi-10.3.1.2-20200121-jub72o2o6gxu7op5wg6knmpcyb3gbsnr
       'spectrum-mpi@summit %pgi@19.9':  /autofs/nccs-svm1_sw/summit/.swci/1-compute/opt/spack/20180914/linux-rhel7-ppc64le/pgi-19.9/spectrum-mpi-10.3.1.2-20200121-zy6l7p3w4q2ns7i2zutzng7ex3drw656
 
   fftw:
     paths:
-      'fftw %gcc@9.1.0': /autofs/nccs-svm1_sw/summit/.swci/1-compute/opt/spack/20180914/linux-rhel7-ppc64le/gcc-6.4.0/fftw-3.3.8-fr4h5sbpztnrzxxtbrkpuicqmksqs2wl
-      'fftw %gcc@8.1.1': /autofs/nccs-svm1_sw/summit/.swci/1-compute/opt/spack/20180914/linux-rhel7-ppc64le/gcc-8.1.1/fftw-3.3.8-in2y7enjd3memwrmamnoxvsmx37mse7
-      'fftw %gcc@7.4.0': /autofs/nccs-svm1_sw/summit/.swci/1-compute/opt/spack/20180914/linux-rhel7-ppc64le/gcc-6.4.0/fftw-3.3.8-fr4h5sbpztnrzxxtbrkpuicqmksqs2wl
-      'fftw %pgi@19.10': /autofs/nccs-svm1_sw/summit/.swci/1-compute/opt/spack/20180914/linux-rhel7-ppc64le/pgi-19.10/fftw-3.3.8-gqrexgid7mduda67hpu42vyxdot3losa
+      'fftw %gcc@9.1.0': /autofs/nccs-svm1_sw/summit/.swci/1-compute/opt/spack/20180914/linux-rhel7-ppc64le/gcc-9.1.0/fftw-3.3.8-ulqesggdmuop5sg6cnzrmzfl6ytaxgzw
+      'fftw %gcc@7.4.0': /autofs/nccs-svm1_sw/summit/.swci/1-compute/opt/spack/20180914/linux-rhel7-ppc64le/gcc-7.4.0/fftw-3.3.8-jxgt7rrijjsdknetgqtdex3nagczihl
+      'fftw %pgi@19.10': /autofs/nccs-svm1_sw/summit/.swci/1-compute/opt/spack/20180914/linux-rhel7-ppc64le/pgi-19.10/fftw-3.3.8-qecymqdgm4d2jpszxhshhi3uxjs3zvmj
       'fftw %pgi@19.9':  /autofs/nccs-svm1_sw/summit/.swci/1-compute/opt/spack/20180914/linux-rhel7-ppc64le/pgi-19.9/fftw-3.3.8-wri566ow7qlimailhyznou5cfm4h362z
+
 
   pkgconf:
     modules:
