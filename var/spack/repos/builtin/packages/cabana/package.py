@@ -73,4 +73,7 @@ class Cabana(CMakePackage):
         else:
             options += ['-DCMAKE_CXX_COMPILER={0}'.format(env['CXX'])]
 
+        mkdirp(self.prefix)
+        install(join_path(self.stage.source_path, 'cmake', 'FindKOKKOS.cmake'), self.prefix)
+
         return options
