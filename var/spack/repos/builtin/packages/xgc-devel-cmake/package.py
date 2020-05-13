@@ -41,6 +41,7 @@ class XgcDevelCmake(CMakePackage):
     depends_on('fusion-io -shared', when="+fusion_io")
     depends_on('effis', when="+effis")
     conflicts('effis@kittie')
+    conflicts('+openacc', when="cuda=none")
 
     kokkos = "kokkos"
     if kokkos == "kokkos-cmake":
@@ -111,8 +112,14 @@ class XgcDevelCmake(CMakePackage):
                 if self.spec.satisfies("+openacc"):
                     gpu_fortran_flags = gpu_fortran_flags + " " + "-ta=tesla:cc{0}".format(self.spec.variants['cuda'].value[-2:])
                     gpu_link_flags = gpu_link_flags + " " + "-ta=tesla:cc{0} -Mnostack_arrays -DUSE_ASYNC".format(self.spec.variants['cuda'].value[-2:])
+            else:
+                gpu_fortran_flags = ""
+                gpu_link_flags = ""
+            """
             elif self.spec.satisfies("+openacc"):
-                gpu_fortran_flags = "acc"
+                gpu_fortran_flags = "-acc"
+                gpu_link_flags = ""
+            """
 
         elif self.spec.satisfies("%gcc"):
             link_flags = ""
@@ -135,19 +142,26 @@ class XgcDevelCmake(CMakePackage):
         self.Append("find_package(PETSC REQUIRED)")
         self.makestream.close()
 
+
         self.flagfile = join_path("build", "xgc_flags.mk")
         filter_file('^\s*(XGC_FLAGS\s*\+=.*)', 'XGC_FLAGS += ', self.flagfile)
-
+        filter_file('PATH_SUFFIXES include', 'PATH_SUFFIXES include mod', join_path(self.stage.source_path, 'CMake', 'FindPSPLINE.cmake'))
+        filter_file('kokkos', 'Kokkos::kokkos', join_path(self.stage.source_path, 'CMake', 'FindCabana.cmake'))
 
         kfile = join_path(self.stage.source_path, 'CMake', 'FindKokkos.cmake')
         os.remove(kfile)
         shutil.copy(join_path(self.spec['cabana'].prefix, 'FindKOKKOS.cmake'), kfile)
         filter_file("KOKKOS DEFAULT_MSG", "Kokkos DEFAULT_MSG", kfile)
 
-        filter_file('kokkos', 'Kokkos::kokkos', join_path(self.stage.source_path, 'CMake', 'FindCabana.cmake'))
         filter_file('TARGET kokkos', 'TARGET Kokkos::kokkos', join_path(self.stage.source_path, 'CMakeLists.txt'))
         filter_file('INTERFACE kokkos', 'INTERFACE Kokkos::kokkos', join_path(self.stage.source_path, 'CMakeLists.txt'))
-        filter_file('PATH_SUFFIXES include', 'PATH_SUFFIXES include mod', join_path(self.stage.source_path, 'CMake', 'FindPSPLINE.cmake'))
+        if not self.spec.satisfies("+openacc"):
+            filter_file('XGC_HAVE_OpenACC TRUE', 'XGC_HAVE_OpenACC FALSE', join_path(self.stage.source_path, 'CMakeLists.txt'))
+
+        if self.spec.satisfies('%gcc'):
+            filter_file('"PGI"', '"GNU"', join_path(self.stage.source_path, 'CMakeLists.txt'))
+            filter_file('__PGI', '__GFORTRAN__', join_path(self.stage.source_path, 'CMakeLists.txt'))
+            filter_file('LINKER_LANGUAGE Fortran', 'LINKER_LANGUAGE CXX', join_path(self.stage.source_path, 'CMakeLists.txt'))
 
         return opts
 
