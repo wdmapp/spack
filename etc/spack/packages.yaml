@@ -75,6 +75,7 @@ packages:
     version: [summit]
     paths:
       'spectrum-mpi@summit %gcc@9.1.0': /autofs/nccs-svm1_sw/summit/.swci/1-compute/opt/spack/20180914/linux-rhel7-ppc64le/gcc-9.1.0/spectrum-mpi-10.3.1.2-20200121-jd4wr7r4th5gtr4qndday6gkbvqziasp
+      'spectrum-mpi@summit %gcc@8.1.1': /autofs/nccs-svm1_sw/summit/.swci/1-compute/opt/spack/20180914/linux-rhel7-ppc64le/gcc-8.1.1/spectrum-mpi-10.3.1.2-20200121-chae23sgwacfeot7vxkpfboz6wao2c33
       'spectrum-mpi@summit %gcc@7.4.0': /autofs/nccs-svm1_sw/summit/.swci/1-compute/opt/spack/20180914/linux-rhel7-ppc64le/gcc-7.4.0/spectrum-mpi-10.3.1.2-20200121-eu2wh5ypz6ipvokwbng2m5ihug6doysh
       'spectrum-mpi@summit %pgi@19.10': /autofs/nccs-svm1_sw/summit/.swci/1-compute/opt/spack/20180914/linux-rhel7-ppc64le/pgi-19.10/spectrum-mpi-10.3.1.2-20200121-jub72o2o6gxu7op5wg6knmpcyb3gbsnr
       'spectrum-mpi@summit %pgi@19.9':  /autofs/nccs-svm1_sw/summit/.swci/1-compute/opt/spack/20180914/linux-rhel7-ppc64le/pgi-19.9/spectrum-mpi-10.3.1.2-20200121-zy6l7p3w4q2ns7i2zutzng7ex3drw656
@@ -82,7 +83,8 @@ packages:
   fftw:
     paths:
       'fftw %gcc@9.1.0': /autofs/nccs-svm1_sw/summit/.swci/1-compute/opt/spack/20180914/linux-rhel7-ppc64le/gcc-9.1.0/fftw-3.3.8-ulqesggdmuop5sg6cnzrmzfl6ytaxgzw
-      'fftw %gcc@7.4.0': /autofs/nccs-svm1_sw/summit/.swci/1-compute/opt/spack/20180914/linux-rhel7-ppc64le/gcc-7.4.0/fftw-3.3.8-jxgt7rrijjsdknetgqtdex3nagczihl
+      'fftw %gcc@8.1.1': /autofs/nccs-svm1_sw/summit/.swci/1-compute/opt/spack/20180914/linux-rhel7-ppc64le/gcc-8.1.1/fftw-3.3.8-in2y7enjd3memwrmamnoxvsmx37mse7t
+      'fftw %gcc@7.4.0': /autofs/nccs-svm1_sw/summit/.swci/1-compute/opt/spack/20180914/linux-rhel7-ppc64le/gcc-7.4.0/fftw-3.3.8-jxgt7rrijjsdknetgqtdex3nagczihll
       'fftw %pgi@19.10': /autofs/nccs-svm1_sw/summit/.swci/1-compute/opt/spack/20180914/linux-rhel7-ppc64le/pgi-19.10/fftw-3.3.8-qecymqdgm4d2jpszxhshhi3uxjs3zvmj
       'fftw %pgi@19.9':  /autofs/nccs-svm1_sw/summit/.swci/1-compute/opt/spack/20180914/linux-rhel7-ppc64le/pgi-19.9/fftw-3.3.8-wri566ow7qlimailhyznou5cfm4h362z
 
