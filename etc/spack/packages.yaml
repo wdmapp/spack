@@ -6,19 +6,13 @@ packages:
       mpi: [mpich]
       scalapack: [netlib-scalapack]
 
-  #mpich:
-  #  version: [3.3]
-  #  paths:
-  #    mpich %gcc @7.4.0: /usr
-
-  cuda:
-    paths:
-      cuda: /usr/local/cuda-10.2
-
   libfabric:
     variants: "fabrics=sockets"
     paths:
       'libfabric % pgi': /usr
+
+  #sz:
+  #  version: [1.4.12.3]
 
   adios2:
     version: [2.5.0, develop]
@@ -30,113 +24,145 @@ packages:
   yaml-cpp:
     version: [0.6.3]
 
+  cuda:
+    version: [10.1.243, 10.2.89]
+    paths:
+      cuda: /usr/local/cuda-10.1
+
   kokkos-cmake:
     version: [3.1.00]
+
+  kokkos:
+    version: [2.9.00]
   
   cabana:
-    version: [0.3.0]
+    version: [suchyta]
 
+  #libelf:
+  #  paths:
+  #    libelf: /usr/x86_64-linux-gnu/
+
+  #libdwarf:
+  #  paths:
+  #    libdwarf: /usr/x86_64-linux-gnu/
+
+
+  #################################################3
+  
   texlive:
     paths:
       texlive: /usr
-
-  libelf:
-    paths:
-      libelf: /usr/x86_64-linux-gnu/
-
-  libdwarf:
-    paths:
-      libdwarf: /usr/x86_64-linux-gnu/
-
-
-  ### These don't build correctly with PGI ###
-  binutils:
-    paths:
-      'binutils %pgi +headers +libiberty -nls': /home/eqs/spack/opt/spack/linux-ubuntu18.04-skylake_avx512/gcc-7.4.0/binutils-2.32-xumgw4sqttynyw3n7dnpmr4ggagkfe3b
-
-  c-blosc:
-    paths:
-      'c-blosc % pgi': /usr
-
-  cmake:
-    paths:
-      'cmake % pgi': /home/eqs/spack/opt/spack/linux-ubuntu18.04-skylake_avx512/gcc-7.4.0/cmake-3.15.4-ws6w22pub7i7durz7njjdzg2hhfxytvc
-
-  findutils:
-    paths:
-      'findutils % pgi': /home/eqs/spack/opt/spack/linux-ubuntu18.04-skylake_avx512/gcc-7.4.0/findutils-4.6.0-squc4ajl2hmbp2kenqicu3djkhwll2xb
-
-  fftw:
-    paths:
-      'fftw % pgi': /home/eqs/spack/opt/spack/linux-ubuntu18.04-skylake_avx512/gcc-7.4.0/fftw-3.3.8-pyizj2aqcxcyovpsa5wbceulctcqm7dl
-
-  gettext:
-    paths:
-      'gettext % pgi': /usr
-
-  hwloc:
-    version: [1.11.11]
-    paths:
-      'hwloc % pgi': /home/eqs/spack/opt/spack/linux-ubuntu18.04-skylake_avx512/gcc-7.4.0/hwloc-1.11.11-axtf7nougb5ku23shdiqqwjqzmefnmjo
-
-  libbsd:
-    paths:
-      'libbsd % pgi': /home/eqs/spack/opt/spack/linux-ubuntu18.04-skylake_avx512/gcc-7.4.0/libbsd-0.9.1-mbafpzggss7dmmq6qqu2ogq6eixp7lx5
-
-  libffi:
-    paths:
-      'libffi % pgi': /usr/x86_64-linux-gnu
-
-  libpciaccess:
-    paths:
-      'libpciaccess % pgi': /usr/x86_64-linux-gnu
-
-  libyaml:
-    paths:
-      'libyaml % pgi': /usr/x86_64-linux-gnu
-
-  lz4:
-    paths:
-      'lz4 % pgi': /usr/x86_64-linux-gnu
-
-  numactl:
-    paths:
-      'numactl % pgi': /usr/x86_64-linux-gnu
-
-  openssl:
-    paths:
-      'openssl % pgi': /usr
-
+  
   perl:
     paths:
-      'perl % pgi': /usr
+      perl: /usr
 
   pkg-config:
     paths:
-      'pkg-config % pgi': /usr
+      pkg-config: /usr
 
-  python:
-    version: [3.7.4, 2.7.16]
+  c-blosc:
     paths:
-      'python@2.7.16 % pgi': /home/eqs/spack/opt/spack/linux-ubuntu18.04-skylake_avx512/gcc-7.4.0/python-2.7.16-gdaqnr4f7lni4hxaghf2gkrsa24rgdxs
-      'python@3.7.4  % pgi': /home/eqs/spack/opt/spack/linux-ubuntu18.04-skylake_avx512/gcc-7.4.0/python-3.7.4-3attiwvrsbdbbiqas6igyqmvvyusy2vq
+      c-blosc: /usr
 
-  py-mpi4py:
+  gettext:
     paths:
-      'py-mpi4py % pgi ^ python@2.7.16': /home/eqs/spack/opt/spack/linux-ubuntu18.04-skylake_avx512/gcc-7.4.0/py-mpi4py-3.0.1-3u3w2fiyqpwivfv5bdkj4stn7kteur7d
-      'py-mpi4py % pgi ^ python@3.7.4':  /home/eqs/spack/opt/spack/linux-ubuntu18.04-skylake_avx512/gcc-7.4.0/py-mpi4py-3.0.1-4hxyd7sjm6gfjdc6nfljy7cx3ritpkx2
+      gettext: /usr
 
-  py-numpy:
-    version: [1.16.5]
+  openssl:
     paths:
-      'py-numpy % pgi ^ python@2.7.16': /home/eqs/spack/opt/spack/linux-ubuntu18.04-skylake_avx512/gcc-7.4.0/py-numpy-1.16.5-of7pnknf2jzxps3ebao2wwupnaprtvp7
-      'py-numpy % pgi ^ python@3.7.4':  /home/eqs/spack/opt/spack/linux-ubuntu18.04-skylake_avx512/gcc-7.4.0/py-numpy-1.16.5-eghbdm2xevn65nrxwufwd4bfbqkhpcfx
+      openssl: /usr
+
+  libbsd:
+    paths:
+      libbsd: /usr
+
+  cmake:
+    paths:
+      cmake: /usr
+
+  #################################################3
+
+  libffi:
+    paths:
+      libffi: /usr/x86_64-linux-gnu
+
+  libpciaccess:
+    paths:
+      libpciaccess: /usr/x86_64-linux-gnu
+      
+  libxml2:
+    paths:
+      libxml2: /usr/x86_64-linux-gnu
+
+  libyaml:
+    paths:
+      libyaml: /usr/x86_64-linux-gnu
+
+  lz4:
+    paths:
+      lz4: /usr/x86_64-linux-gnu
+
+  numactl:
+    paths:
+      numactl: /usr/x86_64-linux-gnu
 
   zeromq:
     paths:
-      'zeromq % pgi': /usr/x86_64-linux-gnu
+      zeromq: /usr/x86_64-linux-gnu
 
   zstd:
     paths:
-      'zstd % pgi': /usr/x86_64-linux-gnu
+      zstd: /usr/x86_64-linux-gnu
+
+  fftw:
+    paths:
+      fftw: /usr/x86_64-linux-gnu
+
+
+  #################################################3
+
+  binutils:
+    paths:
+      #'binutils %pgi +headers +libiberty -nls': /home/eqs/spack/opt/spack/linux-ubuntu18.04-skylake_avx512/gcc-7.4.0/binutils-2.32-xumgw4sqttynyw3n7dnpmr4ggagkfe3b
+      'binutils +headers +libiberty -nls': /usr
+      binutils: /usr
+
+  findutils:
+    paths:
+      #'findutils % pgi': /home/eqs/spack/opt/spack/linux-ubuntu18.04-skylake_avx512/gcc-7.4.0/findutils-4.6.0-squc4ajl2hmbp2kenqicu3djkhwll2xb
+      findutils: /usr
+
+
+  python:
+    paths:
+      "python@2.0.0:2.99.99": /usr/local/python-2.7.18
+      "python@3.0.0:3.99.99": /usr/local/python-3.8.2
+      
+  py-numpy:
+    version: [1.16.5]
+    paths:
+      "py-numpy ^ python@2.0.00:2.99.99": /usr/local/python-2.7.18
+      "py-numpy ^ python@3.0.00:3.99.99": /usr/local/python-3.8.2
+
+  py-mpi4py:
+    paths:
+      "py-mpi4py ^ python@2.0.0:2.99.99": /usr/local/python-2.7.18
+      "py-mpi4py ^ python@3.0.0:3.99.99": /usr/local/python-3.8.2
+
+  py-pyyaml:
+    paths:
+      "py-pyyaml ^ python@2.0.0:2.99.99": /usr/local/python-2.7.18
+      "py-pyyaml ^ python@3.0.0:3.99.99": /usr/local/python-3.8.2
+
+  py-matplotlib:
+    paths:
+      "py-matplotlib ^ python@2.0.0:2.99.99": /usr/local/python-2.7.18
+      "py-matplotlib ^ python@3.0.0:3.99.99": /usr/local/python-3.8.2
+
+  py-setuptools:
+    paths:
+      "py-setuptools ^ python@2.0.0:2.99.99": /usr/local/python-2.7.18
+      "py-setuptools ^ python@3.0.0:3.99.99": /usr/local/python-3.8.2
+
   ###########################################
