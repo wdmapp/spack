@@ -141,7 +141,7 @@ class XgcDevelCmake(CMakePackage):
         filter_file('PATH_SUFFIXES include', 'PATH_SUFFIXES include mod', join_path(self.stage.source_path, 'CMake', 'FindPSPLINE.cmake'))
         filter_file('kokkos', 'Kokkos::kokkos', join_path(self.stage.source_path, 'CMake', 'FindCabana.cmake'))
 
-        if self.spec.satisfies('^cabana @:0.2.99'):
+        if self.spec.satisfies('^cabana @suchyta') or self.spec.satisfies('^cabana @:0.2.99'):
             kfile = join_path(self.stage.source_path, 'CMake', 'FindKokkos.cmake')
             os.remove(kfile)
             shutil.copy(join_path(self.spec['cabana'].prefix, 'FindKOKKOS.cmake'), kfile)
