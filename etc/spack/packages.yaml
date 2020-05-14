@@ -140,3 +140,13 @@ packages:
   #zeromq:
   #  paths:
   #    'zeromq % pgi': /autofs/nccs-svm1_home1/esuchyta/spack/spack/opt/spack/linux-rhel7-power9le/gcc-9.1.0/zeromq-4.3.2-qgxffr3hkaruho5j3vof5z46bg2czg4e
+  
+  binutils:
+    variants: +headers +libiberty ~nls
+    paths:
+      binutils: /usr
+
+  hwloc:
+    version: [1.11.11]
+
+
