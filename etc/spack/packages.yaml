@@ -11,8 +11,8 @@ packages:
     paths:
       'libfabric % pgi': /usr
 
-  #sz:
-  #  version: [1.4.12.3]
+  sz:
+    version: [1.4.12.3]
 
   adios2:
     version: [2.5.0, develop]
@@ -37,15 +37,6 @@ packages:
   
   cabana:
     version: [suchyta]
-
-  #libelf:
-  #  paths:
-  #    libelf: /usr/x86_64-linux-gnu/
-
-  #libdwarf:
-  #  paths:
-  #    libdwarf: /usr/x86_64-linux-gnu/
-
 
   #################################################3
   
@@ -80,6 +71,10 @@ packages:
   cmake:
     paths:
       cmake: /usr
+
+  findutils:
+    paths:
+      findutils: /usr
 
   #################################################3
 
@@ -119,19 +114,23 @@ packages:
     paths:
       fftw: /usr/x86_64-linux-gnu
 
-
   #################################################3
 
   binutils:
+    variants: +headers +libiberty ~nls
     paths:
-      #'binutils %pgi +headers +libiberty -nls': /home/eqs/spack/opt/spack/linux-ubuntu18.04-skylake_avx512/gcc-7.4.0/binutils-2.32-xumgw4sqttynyw3n7dnpmr4ggagkfe3b
-      'binutils +headers +libiberty -nls': /usr
       binutils: /usr
 
-  findutils:
+  hwloc:
+    version: [1.11.11]
+
+  libelf:
     paths:
-      #'findutils % pgi': /home/eqs/spack/opt/spack/linux-ubuntu18.04-skylake_avx512/gcc-7.4.0/findutils-4.6.0-squc4ajl2hmbp2kenqicu3djkhwll2xb
-      findutils: /usr
+      libelf: /usr/x86_64-linux-gnu/
+
+  libdwarf:
+    paths:
+      libdwarf: /usr/x86_64-linux-gnu/
 
 
   python:
