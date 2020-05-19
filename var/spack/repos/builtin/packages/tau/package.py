@@ -23,6 +23,7 @@ class Tau(Package):
     git      = "https://github.com/UO-OACISS/tau2"
 
     version('develop', branch='master')
+    #version('head', commit='a86de6279fca5a5519595753cb9d57eefc8ce4a6')
     version('2.28.2', sha256='64e129a482056755012b91dae2fb4f728dbf3adbab53d49187eca952891c5457')
     version('2.28.1', sha256='b262e5c9977471e9f5a8d729b3db743012df9b0ab8244da2842039f8a3b98b34')
     version('2.28', sha256='68c6f13ae748d12c921456e494006796ca2b0efebdeef76ee7c898c81592883e')
@@ -151,8 +152,7 @@ class Tau(Package):
         # TAU configure, despite the name , seems to be a manually
         # written script (nothing related to autotools).  As such it has
         # a few #peculiarities# that make this build quite hackish.
-        options = ["-prefix=%s" % prefix,
-                   "-iowrapper"]
+        options = ["-prefix=%s" % prefix]  #"-iowrapper"]
 
         if '+craycnl' in spec:
             options.append('-arch=craycnl')
