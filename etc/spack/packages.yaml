@@ -49,7 +49,7 @@ packages:
       rdma-core: /usr
 
   adios2:
-    version: [2.5.0, develop]
+    version: [head, develop]
     #variants: '+python +mpi +sst +ssc +dataman +sz build_type=Release'
     variants: '+mpi +sst -ssc -dataman -sz build_type=Release'
     #paths:
