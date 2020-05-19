@@ -1,4 +1,4 @@
-# Copyright 2013-2020 Lawrence Livermore National Security, LLC and other
+# Copyright 2013-2019 Lawrence Livermore National Security, LLC and other
 # Spack Project Developers. See the top-level COPYRIGHT file for details.
 #
 # SPDX-License-Identifier: (Apache-2.0 OR MIT)
@@ -18,13 +18,12 @@ class Tau(Package):
     Java, Python.
     """
 
-    maintainers = ['wspear', 'eugeneswalker', 'khuck', 'sameershende']
     homepage = "http://www.cs.uoregon.edu/research/tau"
     url      = "https://www.cs.uoregon.edu/research/tau/tau_releases/tau-2.28.1.tar.gz"
     git      = "https://github.com/UO-OACISS/tau2"
 
     version('develop', branch='master')
-    version('2.29', sha256='146be769a23c869a7935e8fa5ba79f40ba36b9057a96dda3be6730fc9ca86086')
+    #version('head', commit='a86de6279fca5a5519595753cb9d57eefc8ce4a6')
     version('2.28.2', sha256='64e129a482056755012b91dae2fb4f728dbf3adbab53d49187eca952891c5457')
     version('2.28.1', sha256='b262e5c9977471e9f5a8d729b3db743012df9b0ab8244da2842039f8a3b98b34')
     version('2.28', sha256='68c6f13ae748d12c921456e494006796ca2b0efebdeef76ee7c898c81592883e')
@@ -68,9 +67,7 @@ class Tau(Package):
     variant('cuda', default=False, description='Activates CUDA support')
     variant('fortran', default=darwin_default, description='Activates Fortran support')
     variant('io', default=True, description='Activates POSIX I/O support')
-    variant('adios2', default=False, description='Activates ADIOS2 output support')
-    variant('sqlite', default=False, description='Activates SQLite3 output support')
-    variant('profileparam', default=False, description='Generate profiles with parameter mapped event data')
+    variant('adios', default=False, description='ADIOS support')
 
     # Support cross compiling.
     # This is a _reasonable_ subset of the full set of TAU
@@ -80,7 +77,6 @@ class Tau(Package):
     variant('ppc64le', default=False, description='Build for IBM Power LE nodes')
     variant('x86_64', default=False, description='Force build for x86 Linux instead of auto-detect')
 
-    depends_on('zlib', type='link')
     depends_on('pdt', when='+pdt')  # Required for TAU instrumentation
     depends_on('scorep', when='+scorep')
     depends_on('otf2@2.1:', when='+otf2')
@@ -89,23 +85,20 @@ class Tau(Package):
     depends_on('libdwarf', when='+libdwarf')
     depends_on('libelf', when='+libdwarf')
     # TAU requires the ELF header support, libiberty and demangle.
-    depends_on('binutils@:2.33.1+libiberty+headers~nls', when='+binutils')
+    depends_on('binutils+libiberty+headers~nls', when='+binutils')
     depends_on('python@2.7:', when='+python')
     depends_on('libunwind', when='+libunwind')
-    depends_on('mpi', when='+mpi', type=('build', 'run', 'link'))
+    depends_on('mpi', when='+mpi')
     depends_on('cuda', when='+cuda')
     depends_on('gasnet', when='+gasnet')
-    depends_on('adios2', when='+adios2')
-    depends_on('sqlite', when='+sqlite')
-    depends_on('hwloc')
+    depends_on('adios2@2.5.0:', when="+adios")
+    depends_on('zlib')
 
     # Elf only required from 2.28.1 on
     conflicts('+libelf', when='@:2.28.0')
     conflicts('+libdwarf', when='@:2.28.0')
 
-    # ADIOS2, SQLite only available from 2.29.1 on
-    conflicts('+adios2', when='@:2.29.1')
-    conflicts('+sqlite', when='@:2.29.1')
+    filter_compiler_wrappers('tau_cc.sh', 'Makefile.tau', relative_root='bin')
 
     def set_compiler_options(self, spec):
 
@@ -124,14 +117,22 @@ class Tau(Package):
         #
         # In the following we give TAU what he expects and put compilers into
         # PATH
+        """
         compiler_path = os.path.dirname(self.compiler.cc)
         os.environ['PATH'] = ':'.join([compiler_path, os.environ['PATH']])
+        """
 
+        """
         compiler_options = ['-c++=%s' % os.path.basename(self.compiler.cxx),
                             '-cc=%s' % os.path.basename(self.compiler.cc)]
+        """
+        compiler_options = ['-c++=c++', '-cc=cc']
 
         if '+fortran' in spec and self.compiler.fc:
-            compiler_options.append('-fortran=%s' % self.compiler.fc_names[0])
+            if spec.satisfies('%pgi'):
+                compiler_options.append('-fortran=pgi')
+            else:
+                compiler_options.append('-fortran=%s' % self.compiler.fc_names[0])
 
         ##########
 
@@ -142,9 +143,6 @@ class Tau(Package):
         compiler_options.append(useropt)
         return compiler_options
 
-    def setup_build_environment(self, env):
-        env.prepend_path('LIBRARY_PATH', self.spec['zlib'].prefix.lib)
-
     def install(self, spec, prefix):
         # TAU isn't happy with directories that have '@' in the path.  Sigh.
         change_sed_delimiter('@', ';', 'configure')
@@ -154,7 +152,7 @@ class Tau(Package):
         # TAU configure, despite the name , seems to be a manually
         # written script (nothing related to autotools).  As such it has
         # a few #peculiarities# that make this build quite hackish.
-        options = ["-prefix=%s" % prefix]
+        options = ["-prefix=%s" % prefix]  #"-iowrapper"]
 
         if '+craycnl' in spec:
             options.append('-arch=craycnl')
@@ -214,17 +212,9 @@ class Tau(Package):
             options.append("-otf=%s" % spec['otf2'].prefix)
 
         if '+mpi' in spec:
-            env['CC'] = spec['mpi'].mpicc
-            env['CXX'] = spec['mpi'].mpicxx
-            env['F77'] = spec['mpi'].mpif77
-            env['FC'] = spec['mpi'].mpifc
-
             options.append('-mpi')
             if '+comm' in spec:
                 options.append('-PROFILECOMMUNICATORS')
-
-        if '+profileparam' in spec:
-            options.append('-PROFILEPARAM')
 
         if '+shmem' in spec:
             options.append('-shmem')
@@ -235,14 +225,11 @@ class Tau(Package):
         if '+cuda' in spec:
             options.append("-cuda=%s" % spec['cuda'].prefix)
 
-        if '+adios2' in spec:
-            options.append("-adios=%s" % spec['adios2'].prefix)
-
-        if '+sqlite' in spec:
-            options.append("-sqlite3=%s" % spec['sqlite'].prefix)
-
         if '+phase' in spec:
             options.append('-PROFILEPHASE')
+
+        if '+adios' in spec:
+            options.append('-adios={0}'.format(spec['adios2'].prefix))
 
         if '+python' in spec:
             options.append('-python')
@@ -274,16 +261,13 @@ class Tau(Package):
 
         compiler_specific_options = self.set_compiler_options(spec)
         options.extend(compiler_specific_options)
+        print(which("g++").path)
         configure(*options)
-
         make("install")
 
         # Link arch-specific directories into prefix since there is
         # only one arch per prefix the way spack installs.
         self.link_tau_arch_dirs()
-        # TAU may capture Spack's internal compiler wrapper. Replace
-        # it with the correct compiler.
-        self.fix_tau_compilers()
 
     def link_tau_arch_dirs(self):
         for subdir in os.listdir(self.prefix):
@@ -293,23 +277,7 @@ class Tau(Package):
                 if os.path.isdir(src) and not os.path.exists(dest):
                     os.symlink(join_path(subdir, d), dest)
 
-    def fix_tau_compilers(self):
-        filter_file('FULL_CC=' + spack_cc, 'FULL_CC=' + self.compiler.cc,
-                    self.prefix + '/include/Makefile', backup=False,
-                    string=True)
-        filter_file('FULL_CXX=' + spack_cxx, 'FULL_CXX=' +
-                    self.compiler.cxx, self.prefix + '/include/Makefile',
-                    backup=False, string=True)
-        for makefile in os.listdir(self.prefix.lib):
-            if makefile.startswith('Makefile.tau'):
-                filter_file('FULL_CC=' + spack_cc, 'FULL_CC=' +
-                            self.compiler.cc, self.prefix.lib + "/" +
-                            makefile, backup=False, string=True)
-                filter_file('FULL_CXX=' + spack_cxx, 'FULL_CXX=' +
-                            self.compiler.cxx, self.prefix.lib +
-                            "/" + makefile, backup=False, string=True)
-
-    def setup_run_environment(self, env):
+    def setup_environment(self, spack_env, run_env):
         pattern = join_path(self.prefix.lib, 'Makefile.*')
         files = glob.glob(pattern)
 
@@ -319,4 +287,4 @@ class Tau(Package):
         # directory to inspect. The conditional below will set `TAU_MAKEFILE`
         # in the latter case.
         if files:
-            env.set('TAU_MAKEFILE', files[0])
+            run_env.set('TAU_MAKEFILE', files[0])

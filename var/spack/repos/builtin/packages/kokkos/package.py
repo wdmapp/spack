@@ -4,6 +4,7 @@
 # SPDX-License-Identifier: (Apache-2.0 OR MIT)
 
 from spack import *
+import os
 
 
 class Kokkos(Package):
@@ -15,6 +16,8 @@ class Kokkos(Package):
     git      = "https://github.com/kokkos/kokkos.git"
 
     version('develop', branch='master')
+    version('3.1.00', sha256='b935c9b780e7330bcb80809992caa2b66fd387e3a1c261c955d622dae857d878')
+    version('3.0.00', sha256='c00613d0194a4fbd0726719bbed8b0404ed06275f310189b3493f5739042a92b')
     version('2.9.00', sha256='e0621197791ed3a381b4f02c78fa529f3cff3abb74d52157b4add17e8aa04bc4')
     version('2.8.00', sha256='1c72661f2d770517bff98837001b42b9c677d1df29f7493a1d7c008549aff630')
     version('2.7.24', sha256='a308a80ea1488f4c18884b828ce7ae9f5210b9a6b2f61b208d875084d8da8cb0')
@@ -70,7 +73,7 @@ class Kokkos(Package):
     gpu_values = ('Kepler30', 'Kepler32', 'Kepler35', 'Kepler37',
                   'Maxwell50', 'Maxwell52', 'Maxwell53',
                   'Pascal60', 'Pascal61',
-                  'Volta70', 'Volta72')
+                  'Volta70', 'Volta72', 'Turing75')
 
     # C++ standard variant
     variant('cxxstd', default='none',
@@ -139,7 +142,14 @@ class Kokkos(Package):
     depends_on('qthreads', when='+qthreads')
     depends_on('cuda', when='+cuda')
 
+
     def install(self, spec, prefix):
+        if self.spec.satisfies("+cuda"):
+            env['CXX'] = join_path(self.stage.source_path, 'bin', 'nvcc_wrapper')
+            env['NVCC_WRAPPER_DEFAULT_COMPILER'] = self.compiler.cxx
+            if self.spec.satisfies('%pgi'):
+                filter_file('--c\+\+11', '-std=c++11', join_path(self.stage.source_path, "Makefile.kokkos"))
+
         generate = which(join_path(self.stage.source_path,
                                    'generate_makefile.bash'))
         with working_dir('build', create=True):
