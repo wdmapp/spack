@@ -23,10 +23,10 @@ compilers:
     operating_system: rhel7
     target: x86_64
     modules:
-      - gcc/6.2.0
+    - gcc/6.2.0
     environment: {}
     extra_rpaths:
-      - /ccs/compilers/gcc/rhel7-x86_64/6.2.0/lib64
+    - /ccs/compilers/gcc/rhel7-x86_64/6.2.0/lib64
 - compiler:
     spec: gcc@8.4.0
     paths:
@@ -38,7 +38,34 @@ compilers:
     operating_system: rhel7
     target: x86_64
     modules:
-      - gcc/8.4.0
+    - gcc/8.4.0
     environment: {}
     extra_rpths:
-      - /sw/rhea/gcc/8.4.0/lib64/
+    - /sw/rhea/gcc/8.4.0/lib64/
+- compiler:
+    spec: pgi@19.10
+    paths:
+      cc: /sw/rhea/pgi/19.10/linux86-64-llvm/19.10/bin/pgcc
+      cxx: /sw/rhea/pgi/19.10/linux86-64-llvm/19.10/bin/pgc++
+      f77: /sw/rhea/pgi/19.10/linux86-64-llvm/19.10/bin/pgfortran
+      fc: /sw/rhea/pgi/19.10/linux86-64-llvm/19.10/bin/pgfortran
+    flags: {}
+    operating_system: rhel7
+    target: x86_64
+    modules:
+      - pgi/19.10
+    environment: {}
+    extra_rpaths: []
+- compiler:
+    spec: pgi@19.4
+    paths:
+      cc: /ccs/compilers/pgi/rhel7-x86_64/19.4/linux86-64-llvm/19.4/bin/pgcc
+      cxx: /ccs/compilers/pgi/rhel7-x86_64/19.4/linux86-64-llvm/19.4/bin/pgc++
+      f77: /ccs/compilers/pgi/rhel7-x86_64/19.4/linux86-64-llvm/19.4/bin/pgfortran
+      fc: /ccs/compilers/pgi/rhel7-x86_64/19.4/linux86-64-llvm/19.4/bin/pgfortran
+    flags: {}
+    operating_system: rhel7
+    target: x86_64
+    modules: []
+    environment: {}
+    extra_rpaths: []

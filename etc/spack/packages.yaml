@@ -8,44 +8,133 @@ packages:
       mpi: [openmpi]
       scalapack: [netlib-scalapack]
 
-  openmpi: 
+  openmpi:
+    buildable: true
     version: [3.1.4]
-    buildable: false
     paths:
-      'openmpi@3.1.4 %gcc@8.4.0': /autofs/nccs-svm1_sw/rhea/.swci/0-core/opt/spack/20191017/linux-rhel7-x86_64/gcc-8.4.0/openmpi-3.1.4-bmn7or3eq2xi2sol4f7yvlpnwniut7yd
-  
-  #cuda:
+      openmpi % gcc@8.4.0: /autofs/nccs-svm1_sw/rhea/.swci/0-core/opt/spack/20191017/linux-rhel7-x86_64/gcc-8.4.0/openmpi-3.1.4-bmn7or3eq2xi2sol4f7yvlpnwniut7yd
+      #openmpi % pgi@19.10: /autofs/nccs-svm1_sw/rhea/.swci/0-core/opt/spack/20191017/linux-rhel7-x86_64/gcc-4.8.5/openmpi-3.1.4-zbx4nrb7cm64dthpvldp22fg46qabbfg
+      #openmpi % pgi@19.4:  /autofs/nccs-svm1_sw/rhea/.swci/0-core/opt/spack/20191017/linux-rhel7-x86_64/gcc-4.8.5/openmpi-3.1.4-zbx4nrb7cm64dthpvldp22fg46qabbfg
+ 
+
+  cuda:
+    version: [10.1.243]
   #  modules:
   #    cuda: cuda/10.0.130
 
-  kokkos-cmake:
-    version: [3.1.00]
+  kokkos:
+    version: [2.9.00, 3.1.00]
     
   cabana:
-    version: [0.3.0]
+    version: [suchyta, 0.3.0]
 
-  # Newer versions require python3, but old PETSc requires python2
-  py-numpy:
-    version: [1.16.5]
 
-  # Anything but agg has a very deep build tree
-  #py-matplotlib:
-  #  variants: 'backend=qt5agg'
+  #rdma-core:
+  #  paths:
+  #    rdma-core: /autofs/nccs-svm1_sw/rhea/.swci/0-core/opt/spack/20191017/linux-rhel7-x86_64/gcc-6.2.0/rdma-core-20-l76aqtxct3qd5dxdqikbgpdwzvp5kfcu
 
   libfabric:
     version: [1.6.1]
     variants: 'fabrics=verbs'
 
-  rdma-core:
-    paths:
-      rdma-core: /autofs/nccs-svm1_sw/rhea/.swci/0-core/opt/spack/20191017/linux-rhel7-x86_64/gcc-6.2.0/rdma-core-20-l76aqtxct3qd5dxdqikbgpdwzvp5kfcu
-
   adios2:
-    version: [2.5.0, develop]
+    version: [develop, 2.5.0]
     variants: '+python build_type=Release'
-
-  kittie:
-    version: [develop]
 
   effis:
     version: [develop, effis]
+
+  adios:
+    version: [develop]
+    variants: '+mpi +fortran +sz -mgard -zfp staging=none'
+
+
+  py-numpy:
+    version: [1.16.5]
+
+  python:
+    version: [3.7.0, 2.7.15]
+    modules:
+      python@3.7.0:  python/3.7.0
+      python@2.7.15: python/2.7.15
+
+  hwloc:
+    version: [1.11.11]
+
+
+  pkgconf:
+    modules:
+      pkgconf %pgi: pkgconf/1.5.4
+
+  diffutils:
+    modules:
+      diffutils %pgi: diffutils/3.7
+
+  tar:
+    modules:
+      tar %pgi: tar/1.31
+
+  perl:
+    modules:
+      perl %pgi: perl/5.26.2
+
+  lz4:
+    modules:
+      lz4 %pgi: lz4/1.8.1.2
+
+  gettext:
+    modules:
+      gettext %pgi: gettext/0.19.8.1
+
+  openssl:
+    modules:
+      openssl %pgi: openssl/1.0.2
+
+  numactl:
+    modules:
+      numactl %pgi: numactl/2.0.12
+
+  cmake:
+    modules:
+      cmake %pgi: cmake/3.15.2
+
+  zstd:
+    modules:
+      zstd %pgi: zstd/1.3.0
+
+  c-blosc:
+    modules:
+      c-blosc %pgi: c-blosc/1.15.0
+
+  libbsd:
+    modules:
+      libbsd %pgi: libbsd/0.9.1
+
+  #automake:
+  #  modules:
+  #    automake %pgi: automake/1.16.1
+
+  #autoconf:
+  #  modules:
+  #    autoconf %pgi: autoconf/2.69
+
+  #libtool:
+  #  #paths:
+  #  #  libtool %pgi: /usr
+  #  modules:
+  #    libtool@2.4.2 %pgi: libtool/2.4.2
+  #    libtool@2.4.6 %pgi: libtool/2.4.6
+
+  findutils:
+    paths:
+      findutils %pgi: /usr
+
+  binutils:
+    variants: +headers +libiberty ~nls
+    modules:
+      binutils: binutils/2.31.1
+
+  libpciaccess:
+    modules:
+      libpciaccess: libpciaccess/0.13.5
+
