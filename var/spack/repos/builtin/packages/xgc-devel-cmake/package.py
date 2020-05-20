@@ -16,7 +16,7 @@ class XgcDevelCmake(CMakePackage):
 
     parallel = False
     cpu_values = ["SKX", "Power9", "SNB"]
-    cuda_values = ["Volta70", "Turing75", "Kepler30"]
+    cuda_values = ["Volta70", "Turing75", "Kepler30", "Kepler37"]
     xgc_options = ["convert_grid2", "deltaf_mode2", "init_gene_pert", 'col_f_positivity_opt', 'neoclassical_test', "iter_grid", "effis", 'build_testing', "fusion_io"]
 
     variant('openmp', default=False, description="Build with OpenMP")
