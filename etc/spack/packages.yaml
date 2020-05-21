@@ -23,53 +23,26 @@ packages:
   cabana:
     version: [suchyta]
 
-  python:
-    version: [3.7.4, 2.7.16]
-    paths:
-      'python@2.7.16 % pgi': /autofs/nccs-svm1_home1/esuchyta/spack/spack/opt/spack/linux-rhel7-power9le/gcc-9.1.0/python-2.7.16-bqqlfnelruanidoddemlhrmpggapsxpk
-
-  py-numpy:
-    version: [1.16.5]
-
   adios:
     version: [develop]
     variants: '+mpi +fortran +sz -mgard -zfp staging=none'
 
-  libffi:
-    paths:
-      'libffi % pgi': /usr
-
   libfabric:
     variants: "fabrics=verbs"
     paths:
-      'libfabric % pgi': /ccs/home/esuchyta/spack/view/libfabric
+      libfabric %pgi: /autofs/nccs-svm1_home1/esuchyta/spack/spack/opt/spack/linux-rhel7-power9le/gcc-7.4.0/libfabric-1.8.1-tjafrv6biv4k4vm62bcakzmyvhozjgkr
 
   rdma-core:
     paths:
       rdma-core: /usr
 
   adios2:
-    version: [head, develop]
+    version: [develop]
     #variants: '+python +mpi +sst +ssc +dataman +sz build_type=Release'
     variants: '+mpi +sst -ssc -dataman -sz build_type=Release'
-    #paths:
-      #'adios2 %pgi@19.4': /ccs/home/esuchyta/spack/view/adios2-nopython
-      #  'adios2 %pgi@19.4': /ccs/home/shku/Software/install/summit/adios2/devel/pgi19.4
 
   effis:
     version: [develop]
-    
-  kittie:
-    version: [develop]
-    variants: '+mpi +python-prefix -touch -fine-time'
-
-  camtimers:
-    paths:
-      'camtimers %pgi': /ccs/home/shku/Software/install/summit/camtimers/pgi19.4
-
-  pspline:
-    paths:
-      'pspline %pgi': /ccs/home/shku/Software/install/summit/pspline/pgi19.4
 
   spectrum-mpi: 
     version: [summit]
@@ -88,65 +61,74 @@ packages:
       'fftw %pgi@19.10': /autofs/nccs-svm1_sw/summit/.swci/1-compute/opt/spack/20180914/linux-rhel7-ppc64le/pgi-19.10/fftw-3.3.8-qecymqdgm4d2jpszxhshhi3uxjs3zvmj
       'fftw %pgi@19.9':  /autofs/nccs-svm1_sw/summit/.swci/1-compute/opt/spack/20180914/linux-rhel7-ppc64le/pgi-19.9/fftw-3.3.8-wri566ow7qlimailhyznou5cfm4h362z
 
+  hwloc:
+    version: [1.11.11]
 
-  pkgconf:
+  python:
+    version: [3.7.0, 2.7.15]
     modules:
-      'pkgconf %pgi': pkgconf/1.5.4
+      python@2.7.15: python/2.7.15
+      python@3.7.0:  python/3.7.0
 
-  diffutils:
+  py-numpy:
+    version: [1.16.5]
+
+
+  perl:
     modules:
-      'diffutils %pgi': diffutils/3.7
+      perl %pgi: perl/5.26.2
+
+  lz4:
+    modules:
+      lz4 %pgi: lz4/1.8.1.2
+
+  gettext:
+    modules:
+      gettext %pgi: gettext/0.19.8.1
+
+  openssl:
+    modules:
+      openssl %pgi: openssl/1.0.2
+
+  numactl:
+    modules:
+      numactl %pgi: numactl/2.0.11
 
   tar:
     modules:
-      'tar %pgi': tar/1.31
+      tar %pgi: tar/1.31
 
-  perl:
-    paths:
-      'perl %pgi': /usr
+  pkgconf:
+    modules:
+      pkgconf %pgi: pkgconf/1.5.4
 
-  lz4:
-    paths:
-      'lz4 %pgi': /usr
-
-  gettext:
-    paths:
-      'gettext %pgi': /usr
-
-  openssl:
-    paths:
-      'openssl %pgi': /usr
-
-  numactl:
-    paths:
-      'numactl %pgi': /usr
+  diffutils:
+    modules:
+      diffutils %pgi: diffutils/3.7
 
   cmake:
-    paths:
-      'cmake %pgi': /ccs/home/esuchyta/spack/view/cmake
+    modules:
+      cmake %pgi: cmake/3.15.2
 
   zstd:
-    paths:
-      'zstd %pgi': /ccs/home/esuchyta/spack/view/zstd-1.4.3
+    modules:
+      zstd %pgi: zstd/1.3.0
 
   c-blosc:
-    paths:
-      'c-blosc %pgi': /ccs/home/esuchyta/spack/view/c-blosc-1.17.0
+    modules:
+      c-blosc %pgi: c-blosc/1.12.1
 
   libbsd:
-    paths:
-      'libbsd % pgi': /autofs/nccs-svm1_home1/esuchyta/spack/spack/opt/spack/linux-rhel7-power9le/gcc-9.1.0/libbsd-0.9.1-kmm2w3vcxidaihxczw6gx2dfgrhcx4ad
+    modules:
+      libbsd %pgi: libbsd/0.9.1
 
-  #zeromq:
-  #  paths:
-  #    'zeromq % pgi': /autofs/nccs-svm1_home1/esuchyta/spack/spack/opt/spack/linux-rhel7-power9le/gcc-9.1.0/zeromq-4.3.2-qgxffr3hkaruho5j3vof5z46bg2czg4e
-  
+
+  libffi:
+    paths:
+      libffi %pgi: /usr
+
   binutils:
     variants: +headers +libiberty ~nls
     paths:
       binutils: /usr
-
-  hwloc:
-    version: [1.11.11]
-
 
