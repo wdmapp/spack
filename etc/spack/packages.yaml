@@ -13,7 +13,7 @@ packages:
     version: [3.1.4]
     paths:
       openmpi % gcc@8.4.0: /autofs/nccs-svm1_sw/rhea/.swci/0-core/opt/spack/20191017/linux-rhel7-x86_64/gcc-8.4.0/openmpi-3.1.4-bmn7or3eq2xi2sol4f7yvlpnwniut7yd
-      #openmpi % pgi@19.10: /autofs/nccs-svm1_sw/rhea/.swci/0-core/opt/spack/20191017/linux-rhel7-x86_64/gcc-4.8.5/openmpi-3.1.4-zbx4nrb7cm64dthpvldp22fg46qabbfg
+      openmpi % pgi@19.10: /autofs/nccs-svm1_sw/rhea/.swci/0-core/opt/spack/20191017/linux-rhel7-x86_64/gcc-4.8.5/openmpi-3.1.4-zbx4nrb7cm64dthpvldp22fg46qabbfg
       #openmpi % pgi@19.4:  /autofs/nccs-svm1_sw/rhea/.swci/0-core/opt/spack/20191017/linux-rhel7-x86_64/gcc-4.8.5/openmpi-3.1.4-zbx4nrb7cm64dthpvldp22fg46qabbfg
  
 
