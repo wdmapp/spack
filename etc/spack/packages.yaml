@@ -30,7 +30,8 @@ packages:
     variants: "fabrics=verbs"
     #version: [1.6.1]
     paths:
-      libfabric %pgi: /autofs/nccs-svm1_home1/esuchyta/spack/spack/opt/spack/linux-rhel7-power9le/gcc-7.4.0/libfabric-1.8.1-tjafrv6biv4k4vm62bcakzmyvhozjgkr
+      libfabric %pgi: /autofs/nccs-svm1_home1/esuchyta/spack/spack/opt/spack/linux-rhel7-power9le/gcc-9.1.0/libfabric-1.8.1-m4ktnpmwvfms5f7w4fnduf63h5h3prbr
+      #libfabric %pgi: /autofs/nccs-svm1_home1/esuchyta/spack/spack/opt/spack/linux-rhel7-power9le/gcc-7.4.0/libfabric-1.8.1-tjafrv6biv4k4vm62bcakzmyvhozjgkr
 
   rdma-core:
     paths:
