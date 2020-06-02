@@ -11,7 +11,7 @@ class XgcDevelCmake(CMakePackage):
     version('master',  git='https://github.com/PrincetonUniversity/XGC-Devel.git', branch='master', preferred=True)
     version('kevin',   git='https://github.com/khuck/XGC-Devel.git', branch='master', preferred=False)
     version('commit',  git='https://github.com/PrincetonUniversity/XGC-Devel.git', commit='63eb658c87bab810ff70e6e95add85a4ab61a94b', preferred=False)
-    version('effis',   git='https://github.com/suchyta1/XGC-Devel.git', branch='effis-more')
+    version('effis',   git='https://github.com/suchyta1/XGC-Devel.git', branch='effis2')
 
 
     parallel = False
