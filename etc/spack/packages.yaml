@@ -38,7 +38,7 @@ packages:
     variants: 'fabrics=verbs'
 
   adios2:
-    version: [develop, 2.5.0]
+    version: [2.5.0, develop]
     variants: '+python build_type=Release'
 
   effis:
