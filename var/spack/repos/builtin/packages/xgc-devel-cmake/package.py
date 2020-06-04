@@ -11,7 +11,10 @@ class XgcDevelCmake(CMakePackage):
     version('master',  git='https://github.com/PrincetonUniversity/XGC-Devel.git', branch='master', preferred=True)
     version('kevin',   git='https://github.com/khuck/XGC-Devel.git', branch='master', preferred=False)
     version('commit',  git='https://github.com/PrincetonUniversity/XGC-Devel.git', commit='63eb658c87bab810ff70e6e95add85a4ab61a94b', preferred=False)
+    
     version('effis',   git='https://github.com/suchyta1/XGC-Devel.git', branch='effis2')
+    version('wdmapp',  git='https://github.com/wdmapp/XGC-Devel.git', branch='wdmapp')
+    version('suchyta',  git='https://github.com/suchyta1/XGC-Devel.git', branch='wdmapp')
 
 
     parallel = False
@@ -19,6 +22,9 @@ class XgcDevelCmake(CMakePackage):
     cuda_values = ["Volta70", "Turing75", "Kepler30", "Kepler37"]
     xgc_options = ["convert_grid2", "deltaf_mode2", "init_gene_pert", 'col_f_positivity_opt', 'neoclassical_test', "iter_grid", "effis", 'build_testing', "fusion_io"]
 
+    variant('gene_coupling', default=False, description="GENE Coupling")
+
+    variant('nocpp', default=False, description="No C++")
     variant('openmp', default=False, description="Build with OpenMP")
     variant('openacc', default=False, description="Build with OpenACC")
     variant('debug', default=False, description="Use debug symbols")
@@ -46,21 +52,22 @@ class XgcDevelCmake(CMakePackage):
 
     kokkos = "kokkos"
     if kokkos == "kokkos-cmake":
-        depends_on('{0} +serial +aggressive_vectorization cxxstd=11'.format(kokkos))
+        depends_on('{0} +serial +aggressive_vectorization cxxstd=11'.format(kokkos), when="-nocpp")
     else:
-        depends_on('{0} +serial +aggressive_vectorization cxxstd=c++11'.format(kokkos))
-    depends_on('cabana +mpi')
-    depends_on('{0} +openmp'.format(kokkos), when="+openmp")
-    depends_on('cabana +openmp', when="+openmp")
+        depends_on('{0} +serial +aggressive_vectorization cxxstd=c++11'.format(kokkos), when="-nocpp")
+    depends_on('cabana +mpi', when="-nocpp")
+    depends_on('{0} +openmp'.format(kokkos), when="+openmp -nocpp")
+    depends_on('cabana +openmp', when="+openmp -nocpp")
 
     for value in cuda_values:
         when = "cuda={0}".format(value)
-        depends_on('{0} +cuda +enable_lambda gpu_arch={1}'.format(kokkos, value), when=when)
-        depends_on('cabana +cuda', when=when)
+        whencpp = "cuda={0} -nocpp".format(value)
+        depends_on('{0} +cuda +enable_lambda gpu_arch={1}'.format(kokkos, value), when=whencpp)
+        depends_on('cabana +cuda', when=whencpp)
         depends_on('cuda', when=when)
 
     for value in cpu_values:
-        when = "host_arch={0}".format(value)
+        when = "host_arch={0} -nocpp".format(value)
         depends_on('{0} {1}'.format(kokkos, when), when=when)
 
     
@@ -71,23 +78,29 @@ class XgcDevelCmake(CMakePackage):
     def cmake_args(self):
 
         if not self.spec.satisfies("cuda=none"):
-            self.binary = 'xgc-es-cpp-gpu'
-            #env['NVCC_WRAPPER_DEFAULT_COMPILER'] = self.spec['mpi'].mpicxx
-            env['NVCC_WRAPPER_DEFAULT_COMPILER'] = self.compiler.cxx
-            cxx = which("nvcc_wrapper").path
-        else:
+            if self.spec.satisfies("-nocpp"):
+                self.binary = 'xgc-es-cpp-gpu'
+                #env['NVCC_WRAPPER_DEFAULT_COMPILER'] = self.spec['mpi'].mpicxx
+                env['NVCC_WRAPPER_DEFAULT_COMPILER'] = self.compiler.cxx
+                cxx = which("nvcc_wrapper").path
+        elif self.spec.satisfies("-nocpp"):
             self.binary = 'xgc-es-cpp'
+            cxx = self.spec['mpi'].mpicxx
+        else:
+            self.binary = 'xgc-es'
             cxx = self.spec['mpi'].mpicxx
 
 
         opts = [
                 "-DCMAKE_CXX_COMPILER={0}".format(cxx),
                 "-DCMAKE_Fortran_COMPILER={0}".format(self.spec['mpi'].mpifc),
-                "-DXGC_USE_CABANA=ON",
                 "-DUSE_SYSTEM_CAMTIMERS=ON",
                 "-DUSE_SYSTEM_PSPLINE=ON",
                 "-DXGC_USE_ADIOS2=ON"
                 ]
+
+        if self.spec.satisfies("-nocpp"):
+            opts += ["-DXGC_USE_CABANA=ON"]
 
         for option in self.xgc_options[:-2]:
             if self.spec.satisfies("+{0}".format(option)):
@@ -100,7 +113,10 @@ class XgcDevelCmake(CMakePackage):
             opts += ["-DBUILD_TESTING=ONF"]
         else:
             opts += ["-DBUILD_TESTING=OFF"]
-            
+
+        if self.spec.satisfies("@wdmapp,suchyta +gene_coupling"):
+            opts += ["-DXGC_GENE_COUPLING=ON"]
+
 
         if self.spec.satisfies("%pgi"):
             link_flags = "-pgc++libs"
@@ -140,18 +156,28 @@ class XgcDevelCmake(CMakePackage):
         self.flagfile = join_path("build", "xgc_flags.mk")
         filter_file('^\s*(XGC_FLAGS\s*\+=.*)', 'XGC_FLAGS += ', self.flagfile)
         filter_file('PATH_SUFFIXES include', 'PATH_SUFFIXES include mod', join_path(self.stage.source_path, 'CMake', 'FindPSPLINE.cmake'))
-        filter_file('kokkos', 'Kokkos::kokkos', join_path(self.stage.source_path, 'CMake', 'FindCabana.cmake'))
 
-        if self.spec.satisfies('^cabana @suchyta') or self.spec.satisfies('^cabana @:0.2.99'):
-            kfile = join_path(self.stage.source_path, 'CMake', 'FindKokkos.cmake')
-            os.remove(kfile)
-            shutil.copy(join_path(self.spec['cabana'].prefix, 'FindKOKKOS.cmake'), kfile)
-            filter_file("KOKKOS DEFAULT_MSG", "Kokkos DEFAULT_MSG", kfile)
-        else:
-            filter_file('if\(Kokkos_FOUND\)', 'if(NOT Kokkos_FOUND)', join_path(self.stage.source_path, 'CMake', 'FindKokkos.cmake'))
+        if self.spec.satisfies("@wdmapp,suchyta"):
+            filter_file("PkgConfig::PETSC", "PETSC::PETSC", join_path(self.stage.source_path, 'CMakeLists.txt'))
+            filter_file("PkgConfig::fftw", "FFTW3::FFTW3", join_path(self.stage.source_path, 'CMakeLists.txt'))
+            filter_file("XGC_ADIOS2_OUTUT", "XGC_ADIOS2_OUTPUT", join_path(self.stage.source_path, 'CMakeLists.txt'))
+            filter_file("NAMES ezspline.mod", "NAMES ezspline.mod PATH_SUFFIXES include mod", join_path(self.stage.source_path, 'CMake', 'FindPSPLINE.cmake'))
 
-        filter_file('TARGET kokkos', 'TARGET Kokkos::kokkos', join_path(self.stage.source_path, 'CMakeLists.txt'))
-        filter_file('INTERFACE kokkos', 'INTERFACE Kokkos::kokkos', join_path(self.stage.source_path, 'CMakeLists.txt'))
+        if self.spec.satisfies("-nocpp"):
+            filter_file('kokkos', 'Kokkos::kokkos', join_path(self.stage.source_path, 'CMake', 'FindCabana.cmake'))
+            filter_file('TARGET kokkos',    'TARGET Kokkos::kokkos',    join_path(self.stage.source_path, 'CMakeLists.txt'))
+            filter_file('INTERFACE kokkos', 'INTERFACE Kokkos::kokkos', join_path(self.stage.source_path, 'CMakeLists.txt'))
+            if self.spec.satisfies("@wdmapp,suchyta"):
+                filter_file("Kokkos CONFIG", "Kokkos MODULE", join_path(self.stage.source_path, 'CMakeLists.txt'))
+            if self.spec.satisfies('^cabana @suchyta') or self.spec.satisfies('^cabana @:0.2.99'):
+                kfile = join_path(self.stage.source_path, 'CMake', 'FindKokkos.cmake')
+                os.remove(kfile)
+                shutil.copy(join_path(self.spec['cabana'].prefix, 'FindKOKKOS.cmake'), kfile)
+                filter_file("KOKKOS DEFAULT_MSG", "Kokkos DEFAULT_MSG", kfile)
+            else:
+                filter_file('if\(Kokkos_FOUND\)', 'if(NOT Kokkos_FOUND)', join_path(self.stage.source_path, 'CMake', 'FindKokkos.cmake'))
+
+
         if not self.spec.satisfies("+openacc"):
             filter_file('XGC_HAVE_OpenACC TRUE', 'XGC_HAVE_OpenACC FALSE', join_path(self.stage.source_path, 'CMakeLists.txt'))
 
