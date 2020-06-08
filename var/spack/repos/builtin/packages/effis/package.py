@@ -29,12 +29,13 @@ class Effis(CMakePackage):
     depends_on('py-setuptools')
 
     # These are not needed for non-Python application use of EFFIS
-    conflicts("python@:2.7.99", when="python-type=full")
-    depends_on('py-pyyaml',     when="python-type=full")         # Needed with EFFIS that composes/submits job AND Python app EFFIS imports
-    depends_on('py-numpy',      when="python-type=full")         # Needed with EFFIS that composes/submits job AND Python app EFFIS imports
-    depends_on('py-mpi4py',     when="python-type=full +mpi")    # Needed with Python app EFFIS imports
-    depends_on('codar-cheetah', when="python-type=full")         # Needed with EFFIS that composes/submits job
-    depends_on('py-matplotlib', when="python-type=full")         # Needed with EFFIS that composes/submits job
+    conflicts("python@:2.7.99",  when="python-type=full")
+    depends_on('py-pyyaml',      when="python-type=full")       # Needed with EFFIS that composes/submits job AND Python app EFFIS imports
+    depends_on('py-numpy',       when="python-type=full")       # Needed with EFFIS that composes/submits job AND Python app EFFIS imports
+    depends_on('py-mpi4py',      when="python-type=full +mpi")  # Needed with Python app EFFIS imports
+    depends_on('codar-cheetah',  when="python-type=full")       # Needed with EFFIS that composes/submits job
+    depends_on('py-matplotlib',  when="python-type=full")       # Needed with EFFIS that composes/submits job
+    depends_on('adios2 +python', when="python-type=full")       # Needed with Python app EFFIS imports
 
 
     def cmake_args(self):
