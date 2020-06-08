@@ -38,15 +38,16 @@ packages:
     variants: 'fabrics=verbs'
 
   adios2:
-    version: [2.5.0, develop]
-    variants: '+python build_type=Release'
+    version: [develop, 2.5.0]
+    #variants: '-sz build_type=Release'
+    variants: '-sz build_type=Debug'
 
   effis:
     version: [develop, effis]
 
   adios:
     version: [develop]
-    variants: '+mpi +fortran +sz -mgard -zfp staging=none'
+    variants: '+mpi +fortran -sz -mgard -zfp staging=none'
 
 
   py-numpy:
