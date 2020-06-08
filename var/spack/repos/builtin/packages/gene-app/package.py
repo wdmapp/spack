@@ -6,7 +6,7 @@
 from spack import *
 
 
-class GeneApp(CMakePackage, CudaPackage):
+class GeneApp(CMakePackage):
     """The GENE (Gyrokinetic Electromagnetic Numerical Experiment) code."""
 
     homepage = "http://genecode.org"
@@ -40,13 +40,17 @@ class GeneApp(CMakePackage, CudaPackage):
     variant('diag_planes', default=False,
             description='Enable diag_planes')
 
+    depends_on('effis', when="+effis")
+    conflicts('effis@kittie')
+    
     depends_on('mpi')
     depends_on('fftw@3.3:')
     depends_on('lapack')
     depends_on('scalapack')
     depends_on('mpi')
     depends_on('pfunit@3.3.3:3.3.99+mpi max_array_rank=6', when='+pfunit')
-    depends_on('adios2', when='+adios2')
+    #depends_on('adios2 -python -shared -blosc -png', when='+adios2')
+    depends_on('adios2 -python', when='+adios2')
     depends_on('hdf5+fortran', when='+futils')
 
     def cmake_args(self):
@@ -65,5 +69,7 @@ class GeneApp(CMakePackage, CudaPackage):
             cuda_arch = spec.variants['cuda_arch'].value
             # if cuda_arch is not None:
             #     args.append('-DCUDA_FLAGS=-arch=sm_{0}'.format(cuda_arch[0]))
+
+        #args += ["-DBUILD_SHARED_LIBS:BOOL=ON"]
 
         return args
