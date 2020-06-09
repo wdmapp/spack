@@ -161,6 +161,7 @@ class XgcDevelCmake(CMakePackage):
             filter_file("PkgConfig::PETSC", "PETSC::PETSC", join_path(self.stage.source_path, 'CMakeLists.txt'))
             filter_file("PkgConfig::fftw", "FFTW3::FFTW3", join_path(self.stage.source_path, 'CMakeLists.txt'))
             filter_file("XGC_ADIOS2_OUTUT", "XGC_ADIOS2_OUTPUT", join_path(self.stage.source_path, 'CMakeLists.txt'))
+            filter_file("ADIOS2 2.5", "ADIOS2", join_path(self.stage.source_path, 'CMakeLists.txt'))
             filter_file("NAMES ezspline.mod", "NAMES ezspline.mod PATH_SUFFIXES include mod", join_path(self.stage.source_path, 'CMake', 'FindPSPLINE.cmake'))
 
         if self.spec.satisfies("-nocpp"):

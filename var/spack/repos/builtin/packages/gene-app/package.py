@@ -21,7 +21,7 @@ class GeneApp(CMakePackage):
             branch='cuda_under_the_hood', preferred=True,
             submodules=True, submodules_delete=['python-diag'])
 
-    version('coupling', branch='coupling', git="https://github.com/suchyta1/gene.git", submodules=True)
+    version('coupling', branch='coupling-effis', git="https://github.com/suchyta1/gene.git", submodules=True)
     variant('effis', default=False, description="Use EFFIS")
 
     variant('pfunit', default=True,
