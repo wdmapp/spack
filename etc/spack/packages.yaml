@@ -24,7 +24,7 @@ packages:
 
   adios:
     version: [develop]
-    variants: '+mpi +fortran +sz -mgard -zfp staging=none'
+    variants: '+mpi +fortran -sz -mgard -zfp staging=none'
 
   libfabric:
     variants: "fabrics=verbs"
@@ -38,7 +38,7 @@ packages:
       rdma-core: /usr
 
   adios2:
-    version: [2.5.0, develop]
+    version: [develop, 2.5.0]
     #variants: '+python +mpi +sst +ssc +dataman +sz build_type=Release'
     variants: '+mpi +sst -ssc -dataman -sz build_type=Release'
 
