@@ -67,8 +67,9 @@ class XgcDevelCmake(CMakePackage):
         depends_on('cuda', when=when)
 
     for value in cpu_values:
-        when = "host_arch={0} -nocpp".format(value)
-        depends_on('{0} {1}'.format(kokkos, when), when=when)
+        when = "host_arch={0}".format(value)
+        whencpp = "host_arch={0} -nocpp".format(value)
+        depends_on('{0} {1}'.format(kokkos, when), when=whencpp)
 
     
     def Append(self, line):
@@ -158,6 +159,7 @@ class XgcDevelCmake(CMakePackage):
         filter_file('PATH_SUFFIXES include', 'PATH_SUFFIXES include mod', join_path(self.stage.source_path, 'CMake', 'FindPSPLINE.cmake'))
 
         if self.spec.satisfies("@wdmapp,suchyta"):
+            filter_file("PRIVATE\$", "PRIVATE $", join_path(self.stage.source_path, 'CMakeLists.txt'))
             filter_file("PkgConfig::PETSC", "PETSC::PETSC", join_path(self.stage.source_path, 'CMakeLists.txt'))
             filter_file("PkgConfig::fftw", "FFTW3::FFTW3", join_path(self.stage.source_path, 'CMakeLists.txt'))
             filter_file("XGC_ADIOS2_OUTUT", "XGC_ADIOS2_OUTPUT", join_path(self.stage.source_path, 'CMakeLists.txt'))

@@ -23,6 +23,7 @@ class GeneApp(CMakePackage):
 
     #version('coupling', branch='coupling-effis', git="https://github.com/suchyta1/gene.git", submodules=True)
     version('coupling', branch='coupling-tmp+', git="https://github.com/suchyta1/gene.git", submodules=True)
+    version('coupling2', branch='coupling-tmp++', git="https://github.com/suchyta1/gene.git", submodules=True)
     variant('effis', default=False, description="Use EFFIS")
 
     variant('pfunit', default=True,
